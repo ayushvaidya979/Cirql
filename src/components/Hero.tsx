@@ -48,11 +48,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenScanner }) => {
           {/* LEFT CONTENT (approx 5-8% margin, 5 cols on lg) */}
           <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left relative z-20">
 
-            {/* EYEBROW TEXT */}
-            <div className="text-xs sm:text-sm font-mono font-bold text-[#193829] uppercase tracking-widest">
-              01 — HERO
-            </div>
-
             {/* MAIN EDITORIAL HEADING */}
             <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight text-[#111111] leading-[0.98] font-sans">
               Every Part<br />
