@@ -1,19 +1,53 @@
-import React, { useState } from 'react';
-import { X, Calendar, Clock, MapPin, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  X, Calendar, Clock, MapPin, CheckCircle2, ShieldCheck, ArrowRight,
+  QrCode, Sparkles, Building2, Smartphone, Laptop, Tablet, Cpu, PackageCheck
+} from 'lucide-react';
 import { Recycler } from '../types';
 
 interface BookingModalProps {
+  isOpen: boolean;
   recycler: Recycler | null;
   onClose: () => void;
 }
 
-export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose }) => {
-  const [date, setDate] = useState('2026-08-14');
+export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, recycler, onClose }) => {
+  const [date, setDate] = useState('2026-08-15');
   const [timeSlot, setTimeSlot] = useState('10:00 AM - 12:00 PM');
   const [deviceType, setDeviceType] = useState('Smartphone');
   const [booked, setBooked] = useState(false);
+  const [animIn, setAnimIn] = useState(false);
 
-  if (!recycler) return null;
+  // Reset booking state and animate in when modal opens
+  useEffect(() => {
+    if (isOpen && recycler) {
+      setBooked(false);
+      setAnimIn(true);
+    } else {
+      setAnimIn(false);
+    }
+  }, [isOpen, recycler]);
+
+  // Handle ESC key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  if (!isOpen || !recycler) return null;
+
+  const handleClose = () => {
+    setAnimIn(false);
+    setTimeout(() => {
+      setBooked(false);
+      onClose();
+    }, 150);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,50 +55,123 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden relative">
-        
-        {/* Header */}
-        <div className="bg-[#2a5247] text-white p-6 relative">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+      style={{
+        background: 'rgba(9, 20, 16, 0.72)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        opacity: animIn ? 1 : 0,
+        transition: 'opacity 0.2s ease-in-out',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
+      {/* ── MODAL CONTAINER ── */}
+      <div
+        className="bg-white rounded-3xl max-w-lg w-full border border-slate-200/80 shadow-2xl overflow-hidden relative transform transition-all duration-300"
+        style={{
+          transform: animIn ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(12px)',
+        }}
+      >
+
+        {/* ── HEADER ── */}
+        <div className="bg-gradient-to-r from-[#1b4332] via-[#2d6457] to-[#40916c] text-white p-6 relative">
           <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-emerald-300 hover:text-white p-1 rounded-lg bg-emerald-900/50"
+            onClick={handleClose}
+            aria-label="Close modal"
+            className="absolute top-4 right-4 text-white/80 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
-          <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950 px-2.5 py-0.5 rounded uppercase border border-emerald-700">
-            {recycler.type}
-          </span>
-          <h3 className="text-xl font-bold text-white mt-1">{recycler.name}</h3>
-          <p className="text-xs text-emerald-200/80">{recycler.address}</p>
+          
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 border border-white/25 text-[10px] font-mono font-bold text-emerald-100 uppercase mb-2 backdrop-blur-sm">
+            <Building2 className="w-3 h-3" />
+            <span>{recycler.type}</span>
+          </div>
+          
+          <h3 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">{recycler.name}</h3>
+          <p className="text-xs text-emerald-100/90 flex items-center gap-1 mt-1 font-medium">
+            <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-300" />
+            <span className="truncate">{recycler.address}</span>
+          </p>
         </div>
 
-        {/* Body */}
-        <div className="p-6 sm:p-8">
+        {/* ── BODY ── */}
+        <div className="p-6 sm:p-8 bg-[#f8faf7]">
           {booked ? (
-            <div className="py-8 text-center space-y-3">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-8 h-8" />
+            /* ── CONFIRMATION PASSCARD STATE ── */
+            <div className="py-4 text-center space-y-5 animate-in fade-in zoom-in-95 duration-300">
+              <div className="relative inline-block">
+                <div className="w-20 h-20 bg-emerald-100/80 text-[#2d6457] rounded-3xl flex items-center justify-center mx-auto shadow-inner border border-emerald-200">
+                  <CheckCircle2 className="w-10 h-10 text-[#2d6457]" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 bg-emerald-600 text-white rounded-full p-1 shadow-md">
+                  <Sparkles className="w-4 h-4" />
+                </div>
               </div>
-              <h4 className="text-xl font-bold text-slate-900">Drop-off Slot Confirmed!</h4>
-              <p className="text-xs text-slate-600 max-w-xs mx-auto">
-                Your QR express pass for <span className="font-bold text-slate-800">{recycler.name}</span> on <span className="font-bold text-slate-800">{date} ({timeSlot})</span> has been generated and sent to your phone.
-              </p>
-              <button
-                onClick={onClose}
-                className="mt-4 bg-[#234d40] text-white font-bold text-xs py-2.5 px-6 rounded-xl"
-              >
-                Close &amp; View Pass
-              </button>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
+                  Reservation Confirmed
+                </span>
+                <h4 className="text-2xl font-extrabold text-slate-900 mt-2">Express Drop-Off Pass</h4>
+                <p className="text-xs text-slate-600 max-w-xs mx-auto mt-1 font-medium leading-relaxed">
+                  Present this digital QR pass at <span className="font-bold text-slate-800">{recycler.name}</span>.
+                </p>
+              </div>
+
+              {/* QR Code Graphic Box */}
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-md inline-block max-w-[220px] mx-auto">
+                <div className="w-40 h-40 bg-slate-900 rounded-xl p-3 flex flex-col items-center justify-center relative overflow-hidden group">
+                  {/* Styled QR Code Mock Visual */}
+                  <QrCode className="w-full h-full text-white" />
+                  <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[1px]">
+                    <span className="text-[9px] font-mono text-white bg-slate-900/90 px-2 py-1 rounded border border-emerald-400">
+                      SCAN AT KIOSK
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2.5 text-[10px] font-mono font-bold text-slate-500 tracking-wider uppercase">
+                  PASS ID: CQ-{Math.floor(100000 + Math.random() * 900000)}
+                </div>
+              </div>
+
+              {/* Summary Details */}
+              <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-3.5 text-left text-xs space-y-1.5">
+                <div className="flex items-center justify-between text-slate-700">
+                  <span className="text-slate-500 font-medium">Category:</span>
+                  <span className="font-bold text-emerald-900">{deviceType}</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-700">
+                  <span className="text-slate-500 font-medium">Date &amp; Slot:</span>
+                  <span className="font-bold text-emerald-900">{date} • {timeSlot}</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="w-full bg-[#1b4332] hover:bg-[#112a1f] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <PackageCheck className="w-4 h-4" />
+                  <span>Done &amp; Close</span>
+                </button>
+              </div>
             </div>
           ) : (
+            /* ── BOOKING FORM STATE ── */
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">E-Waste Item Category</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5 tracking-wider">
+                  E-Waste Item Category
+                </label>
                 <select
                   value={deviceType}
                   onChange={(e) => setDeviceType(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold text-slate-800 shadow-2xs"
                 >
                   <option value="Smartphone">Smartphone / Mobile Phone</option>
                   <option value="Laptop">Laptop / Desktop Computer</option>
@@ -74,24 +181,30 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Select Date</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5 tracking-wider flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Select Date</span>
+                  </label>
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold text-slate-800 shadow-2xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Select Time Slot</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5 tracking-wider flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Select Time Slot</span>
+                  </label>
                   <select
                     value={timeSlot}
                     onChange={(e) => setTimeSlot(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 font-semibold text-slate-800 shadow-2xs"
                   >
                     <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
                     <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
@@ -100,14 +213,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                <span>Instant QR check-in &amp; priority valuation upon arrival.</span>
+              <div className="p-3.5 bg-emerald-50/90 border border-emerald-200/90 rounded-2xl text-xs text-emerald-900 flex items-center gap-2.5 shadow-2xs">
+                <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
+                <span className="font-medium leading-snug">
+                  Instant QR check-in pass &amp; priority valuation upon arrival.
+                </span>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#2d6457] hover:bg-[#234d40] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[#1b4332] hover:bg-[#112a1f] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
               >
                 <span>Confirm Drop-off Reservation</span>
                 <ArrowRight className="w-4 h-4" />

@@ -104,6 +104,7 @@ export function App() {
       />
 
       <BookingModal
+        isOpen={bookingModalOpen}
         recycler={selectedRecycler}
         onClose={() => {
           setBookingModalOpen(false);
