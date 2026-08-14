@@ -15,7 +15,7 @@ const cpcbTimelineData = [
     recycledTonnes: 22700,
     generatedLakh: null,
     recycledLakh: 0.23,
-    rate: null,
+    rate: 0,
     note: 'Initial CPCB tracking',
   },
   {
@@ -24,7 +24,7 @@ const cpcbTimelineData = [
     recycledTonnes: null,
     generatedLakh: 7.08,
     recycledLakh: null,
-    rate: null,
+    rate: 0,
     note: 'First official generation report',
   },
   {
@@ -138,7 +138,7 @@ const CpcbTimelineTooltip = ({ active, payload, label }: any) => {
           <div className="text-slate-400 text-[11px] font-medium">Recycled figure not reported</div>
         )}
 
-        {data.rate !== null && (
+        {data.rate > 0 && (
           <div className="pt-1.5 mt-1 border-t border-slate-200/60 flex items-center justify-between">
             <span className="text-emerald-800 font-bold">Recycling Rate:</span>
             <span className="font-extrabold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-md">
@@ -412,7 +412,7 @@ export const RecentNumbers: React.FC = () => {
                 >
                   <span className="text-[10px] font-extrabold text-slate-500 uppercase block">{d.year}</span>
                   <span className="text-xs font-black block mt-0.5">
-                    {d.rate !== null ? `${d.rate}%` : d.recycledLakh ? `${d.recycledLakh}L t` : `${d.generatedLakh}L t`}
+                    {d.rate > 0 ? `${d.rate}%` : d.recycledLakh ? `${d.recycledLakh}L t` : `${d.generatedLakh}L t`}
                   </span>
                   <span className="text-[9px] font-semibold text-slate-400 block truncate mt-0.5">{d.note}</span>
                 </div>
