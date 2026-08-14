@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Smartphone, Laptop, Tablet, Cpu, Tv, Check, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
+import { Smartphone, Laptop, Check, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
 
 interface ValueEstimatorProps {
   onOpenScanner: (calculatedVal?: number, deviceName?: string) => void;
 }
 
 export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner }) => {
-  const [category, setCategory] = useState<'Smartphone' | 'Laptop / PC' | 'Tablet / iPad' | 'Circuit Board (PCB)' | 'TV / Display'>('Smartphone');
+  const [category, setCategory] = useState<'Smartphone' | 'Laptop / PC'>('Smartphone');
   const [brand, setBrand] = useState('Apple');
   const [ageYears, setAgeYears] = useState<number>(2); // 0 to 6
   const [condition, setCondition] = useState<'Flawless' | 'Minor Scratches' | 'Cracked Display' | 'Dead'>('Minor Scratches');
@@ -15,17 +15,11 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
   const categories = [
     { name: 'Smartphone', icon: Smartphone },
     { name: 'Laptop / PC', icon: Laptop },
-    { name: 'Tablet / iPad', icon: Tablet },
-    { name: 'Circuit Board (PCB)', icon: Cpu },
-    { name: 'TV / Display', icon: Tv },
   ] as const;
 
   const brandsMap: Record<string, string[]> = {
     Smartphone: ['Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Google', 'Sony'],
     'Laptop / PC': ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer'],
-    'Tablet / iPad': ['Apple', 'Samsung', 'Lenovo', 'Xiaomi'],
-    'Circuit Board (PCB)': ['Generic OEM', 'Industrial Grade', 'Server Grade', 'Consumer Electronics'],
-    'TV / Display': ['Sony', 'Samsung', 'LG', 'Panasonic', 'TCL'],
   };
 
   const currentBrands = brandsMap[category] || ['Apple', 'Samsung', 'Dell'];
@@ -34,9 +28,6 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
   const { estimatedCash, ecoCoins, metalYields } = useMemo(() => {
     let base = 4200;
     if (category === 'Laptop / PC') base = 11500;
-    if (category === 'Tablet / iPad') base = 6200;
-    if (category === 'Circuit Board (PCB)') base = 1900;
-    if (category === 'TV / Display') base = 4800;
 
     let brandMult = 1.0;
     if (brand === 'Apple') brandMult = 1.35;
@@ -56,9 +47,7 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
 
     const coins = Math.round(total * 0.08);
 
-    let metals = 'Gold, Copper, Palladium';
-    if (category === 'Circuit Board (PCB)') metals = 'Gold (High Yield), Silver, Copper, Tantalum';
-    if (category === 'TV / Display') metals = 'Copper, Aluminum, Indium, Rare Earths';
+    const metals = 'Gold, Copper, Palladium';
 
     return { estimatedCash: total, ecoCoins: coins, metalYields: metals };
   }, [category, brand, ageYears, condition, includeAdapter]);
@@ -84,7 +73,7 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             Discover Your Device's True Recycle Value
           </h2>
 
@@ -116,7 +105,7 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
                       onClick={() => handleCategoryChange(cat.name)}
                       className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all text-center ${
                         isSelected
-                          ? 'bg-[#1b4332] text-white border-[#1b4332] shadow-md scale-[1.02]'
+                          ? 'bg-[#234d40] text-white border-[#234d40] shadow-md scale-[1.02]'
                           : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50'
                       }`}
                     >
@@ -243,7 +232,7 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
           </div>
 
           {/* RIGHT CARD: LIVE VALUATION PANEL (5 COLS) */}
-          <div className="lg:col-span-5 bg-[#113123] rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-emerald-500/30 relative overflow-hidden flex flex-col justify-between min-h-[480px]">
+          <div className="lg:col-span-5 bg-[#2a5247] rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-emerald-500/30 relative overflow-hidden flex flex-col justify-between min-h-[480px]">
             
             {/* Ambient Lighting Background */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>

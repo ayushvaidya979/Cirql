@@ -25,7 +25,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
       <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden relative">
         
         {/* Header */}
-        <div className="bg-[#113123] text-white p-6 relative">
+        <div className="bg-[#2a5247] text-white p-6 relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-emerald-300 hover:text-white p-1 rounded-lg bg-emerald-900/50"
@@ -52,7 +52,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
               </p>
               <button
                 onClick={onClose}
-                className="mt-4 bg-[#1b4332] text-white font-bold text-xs py-2.5 px-6 rounded-xl"
+                className="mt-4 bg-[#234d40] text-white font-bold text-xs py-2.5 px-6 rounded-xl"
               >
                 Close &amp; View Pass
               </button>
@@ -107,7 +107,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ recycler, onClose })
 
               <button
                 type="submit"
-                className="w-full bg-[#1b4332] hover:bg-[#113123] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[#2d6457] hover:bg-[#234d40] text-white font-bold text-sm py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <span>Confirm Drop-off Reservation</span>
                 <ArrowRight className="w-4 h-4" />

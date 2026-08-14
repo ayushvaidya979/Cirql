@@ -29,8 +29,8 @@ export const Footer: React.FC = () => {
           {/* BRAND COLUMN (4 COLS) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#1b4332] to-[#2d6a4f] p-0.5 shadow-md flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full bg-[#1b4332] rounded-[14px] flex items-center justify-center relative overflow-hidden">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#234d40] to-[#2d6a4f] p-0.5 shadow-md flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+                <div className="w-full h-full bg-[#234d40] rounded-[14px] flex items-center justify-center relative overflow-hidden">
                   <Leaf className="w-6 h-6 text-emerald-400 absolute opacity-90 group-hover:scale-110 transition-transform duration-300" />
                   <Recycle className="w-4 h-4 text-emerald-200 absolute bottom-1 right-1 opacity-75 group-hover:rotate-12 transition-transform duration-300" strokeWidth={2.5} />
                 </div>
@@ -109,7 +109,14 @@ export const Footer: React.FC = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-emerald-950/80 border border-emerald-900 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-emerald-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 flex-1"
+                  className="flex-1 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-emerald-700/60 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  style={{
+                    background: 'rgba(255,255,255,0.07)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.15)',
+                  }}
                 />
                 <button
                   type="submit"

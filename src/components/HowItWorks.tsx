@@ -40,7 +40,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 bg-white relative overflow-hidden">
+    <section id="how-it-works" className="py-24 section-tint-a relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* SECTION HEADER */}
@@ -52,7 +52,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             How Cirql Works
           </h2>
 
@@ -70,10 +70,10 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
               <div
                 key={step.number}
                 onClick={() => setActiveStep(isSelected ? null : idx)}
-                className={`group bg-white rounded-3xl p-8 border transition-all duration-300 relative flex flex-col justify-between cursor-pointer ${
+                className={`group card-glass rounded-3xl p-8 border-0 transition-all duration-300 relative flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'border-emerald-600 shadow-xl ring-2 ring-emerald-500/20 -translate-y-1'
-                    : 'border-slate-200/80 shadow-card hover:shadow-lg hover:border-emerald-300 hover:-translate-y-1'
+                    ? 'shadow-xl ring-2 ring-emerald-500/25 -translate-y-1'
+                    : 'shadow-sm hover:shadow-lg hover:-translate-y-1'
                 }`}
               >
                 <div>
@@ -118,7 +118,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
         </div>
 
         {/* BOTTOM DARK GREEN CTA BANNER (Matching Image 2) */}
-        <div className="bg-[#113123] rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-emerald-600/30">
+        <div className="bg-[#2a5247] rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-emerald-600/30">
           
           {/* Subtle Background Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -135,7 +135,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
           <div className="relative z-10 shrink-0">
             <button
               onClick={onOpenScanner}
-              className="bg-white hover:bg-emerald-50 text-[#113123] px-8 py-4 rounded-full font-bold text-base shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 group"
+              className="bg-white hover:bg-emerald-50 text-[#2a5247] px-8 py-4 rounded-full font-bold text-base shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 group"
             >
               <span>Scan E-Waste Now</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

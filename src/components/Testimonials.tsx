@@ -30,7 +30,7 @@ export const Testimonials: React.FC = () => {
   ];
 
   return (
-    <section className="py-24 bg-[#f8faf7] relative">
+    <section className="py-24 section-tint-a relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* HEADER */}
@@ -42,7 +42,7 @@ export const Testimonials: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             Real Stories, Real Impact
           </h2>
 
@@ -56,7 +56,7 @@ export const Testimonials: React.FC = () => {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-card hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="card-glass rounded-3xl p-8 border-0 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Rating Stars */}

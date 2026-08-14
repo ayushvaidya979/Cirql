@@ -33,7 +33,7 @@ export const FAQ: React.FC = () => {
   };
 
   return (
-    <section className="py-24 bg-white relative">
+    <section className="py-24 section-tint-b relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* HEADER */}
@@ -45,7 +45,7 @@ export const FAQ: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             Frequently Asked Questions
           </h2>
 
@@ -61,10 +61,10 @@ export const FAQ: React.FC = () => {
             return (
               <div
                 key={idx}
-                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                className={`rounded-2xl border-0 transition-all duration-300 overflow-hidden ${
                   isOpen
-                    ? 'bg-emerald-50/40 border-emerald-600 shadow-md'
-                    : 'bg-white border-slate-200/90 hover:border-emerald-300'
+                    ? 'glass-emerald shadow-md'
+                    : 'card-glass hover:shadow-md'
                 }`}
               >
                 <button
@@ -73,7 +73,7 @@ export const FAQ: React.FC = () => {
                 >
                   <span>{faq.question}</span>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                    isOpen ? 'bg-[#1b4332] text-white rotate-180' : 'bg-slate-100 text-slate-600'
+                    isOpen ? 'bg-[#234d40] text-white rotate-180' : 'bg-slate-100 text-slate-600'
                   }`}>
                     <ChevronDown className="w-5 h-5" />
                   </div>

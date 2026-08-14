@@ -49,9 +49,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenScanner }) => {
           <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left relative z-20">
 
             {/* MAIN EDITORIAL HEADING */}
-            <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight text-[#111111] leading-[0.98] font-sans">
-              Every Part<br />
-              <span className="text-[#2d6a4f]">Counts.</span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold tracking-tight leading-[0.98] font-sans">
+              <span className="text-gradient-glass">Every Part</span><br />
+              <span className="text-gradient-emerald">Counts.</span>
             </h1>
 
             {/* 3 VISUAL LINES SUBTEXT */}
@@ -63,12 +63,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenScanner }) => {
 
             {/* SUSTAINABILITY STATEMENT */}
             <div className="pt-2">
-              <div className="inline-flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-[#193829] shrink-0">
-                  <Leaf className="w-4.5 h-4.5 fill-[#193829]" />
+              <div
+                className="inline-flex items-center gap-3 glass-pill px-4 py-2.5 rounded-2xl"
+              >
+                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-[#2d6457] shrink-0">
+                  <Leaf className="w-4.5 h-4.5 fill-[#2d6457]" />
                 </div>
                 <div className="text-sm sm:text-base leading-snug">
-                  <span className="font-bold text-[#193829] block">Sustainable Today,</span>
+                  <span className="font-bold text-[#2d6457] block">Sustainable Today,</span>
                   <span className="font-bold text-[#2d6a4f] block">Better Tomorrow.</span>
                 </div>
               </div>
@@ -96,20 +98,33 @@ export const Hero: React.FC<HeroProps> = ({ onOpenScanner }) => {
         {/* SCAN YOUR DEVICE NOW BUTTON */}
         <button
           onClick={onOpenScanner}
-          className="group relative inline-flex items-center justify-center gap-3.5 bg-[#193829] hover:bg-[#11281c] text-white text-lg font-bold px-8 h-[60px] rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300 border border-emerald-700/30"
+          className="group relative inline-flex items-center justify-center gap-3.5 text-white text-lg font-bold px-8 h-[60px] rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-300 overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #2d6457 0%, #40916c 60%, #52b788 100%)',
+            border: '1px solid rgba(82,183,136,0.4)',
+            boxShadow: '0 4px 24px rgba(45,106,79,0.30), inset 0 1px 0 rgba(255,255,255,0.15)',
+          }}
         >
-          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0 group-hover:rotate-12 transition-transform">
+          {/* inner glass shimmer */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.0) 55%)',
+            }}
+          />
+          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0 group-hover:rotate-12 transition-transform relative z-10">
             <Leaf className="w-4 h-4 fill-white" />
           </div>
-          <span className="tracking-wide">Scan Your Device Now</span>
+          <span className="tracking-wide relative z-10">Scan Your Device Now</span>
         </button>
 
         {/* SCROLL INDICATOR */}
         <button
           onClick={scrollToExplore}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#193829] hover:text-[#2d6a4f] transition-colors py-1 group"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2d6457] hover:text-[#2d6a4f] transition-colors py-1 group"
         >
-          <ChevronDown className="w-4 h-4 text-[#193829] animate-bounce" />
+          <ChevronDown className="w-4 h-4 text-[#2d6457] animate-bounce" />
           <span>Scroll to explore</span>
         </button>
 

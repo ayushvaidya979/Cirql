@@ -10,6 +10,7 @@ import { WhyCirql } from './components/WhyCirql';
 import { Testimonials } from './components/Testimonials';
 import { FAQ } from './components/FAQ';
 import { Contact } from './components/Contact';
+import { RecentNumbers } from './components/RecentNumbers';
 import { Footer } from './components/Footer';
 
 import { AIScannerModal } from './components/AIScannerModal';
@@ -78,7 +79,10 @@ export function App() {
         {/* 09 FAQ */}
         <FAQ />
 
-        {/* 10 CONTACT */}
+        {/* 10 RECENT NUMBERS */}
+        <RecentNumbers />
+
+        {/* 11 CONTACT */}
         <Contact />
       </main>
 

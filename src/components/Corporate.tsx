@@ -17,7 +17,7 @@ export const Corporate: React.FC = () => {
   };
 
   return (
-    <section id="corporate" className="py-24 bg-[#0e251a] text-white relative overflow-hidden">
+    <section id="corporate" className="py-24 bg-[#1d433a] text-white relative overflow-hidden">
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -35,7 +35,7 @@ export const Corporate: React.FC = () => {
                 </span>
               </div>
 
-              <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 font-sans leading-tight">
+              <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans leading-tight bg-gradient-to-r from-white via-emerald-100 to-emerald-300 bg-clip-text text-transparent">
                 Corporate E-Waste &amp; ESG Compliance Solutions
               </h2>
 
@@ -139,7 +139,7 @@ export const Corporate: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#1b4332] hover:bg-[#113123] text-white font-bold text-sm py-4 px-6 rounded-xl shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-2 group mt-2"
+                  className="w-full bg-[#2d6457] hover:bg-[#234d40] text-white font-bold text-sm py-4 px-6 rounded-xl shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-2 group mt-2"
                 >
                   <span>Schedule Enterprise Consultation</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

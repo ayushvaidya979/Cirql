@@ -15,7 +15,7 @@ export const WhyCirql: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             Why Cirql is the Future
           </h2>
 
@@ -28,12 +28,12 @@ export const WhyCirql: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           {/* Card 1 */}
-          <div className="bg-[#f8faf7] rounded-3xl p-8 border border-slate-200/80 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative group">
+          <div className="card-glass rounded-3xl p-8 border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative group">
             <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6">
               <Sparkles className="w-6 h-6" />
             </div>
             
-            <div className="text-6xl font-extrabold text-[#1b4332] font-sans tracking-tight mb-3">
+            <div className="text-6xl font-extrabold text-[#2d6457] font-sans tracking-tight mb-3">
               100x
             </div>
 
@@ -47,12 +47,12 @@ export const WhyCirql: React.FC = () => {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-[#f8faf7] rounded-3xl p-8 border border-slate-200/80 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative group">
+          <div className="card-glass rounded-3xl p-8 border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative group">
             <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mb-6">
               <ShieldAlert className="w-6 h-6" />
             </div>
 
-            <div className="text-6xl font-extrabold text-[#1b4332] font-sans tracking-tight mb-3">
+            <div className="text-6xl font-extrabold text-[#2d6457] font-sans tracking-tight mb-3">
               53M
             </div>
 
@@ -66,12 +66,12 @@ export const WhyCirql: React.FC = () => {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#f8faf7] rounded-3xl p-8 border border-slate-200/80 shadow-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative group">
+          <div className="card-glass rounded-3xl p-8 border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative group">
             <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6">
               <Recycle className="w-6 h-6" />
             </div>
 
-            <div className="text-6xl font-extrabold text-[#1b4332] font-sans tracking-tight mb-3">
+            <div className="text-6xl font-extrabold text-[#2d6457] font-sans tracking-tight mb-3">
               0%
             </div>
 

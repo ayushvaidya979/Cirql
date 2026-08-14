@@ -145,7 +145,7 @@ export const Contact: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#1b4332] hover:bg-[#113123] text-white font-bold text-base py-4 px-8 rounded-2xl shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-2 group"
+                  className="w-full bg-[#2d6457] hover:bg-[#234d40] text-white font-bold text-base py-4 px-8 rounded-2xl shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-2 group"
                 >
                   <span>Send Inquiry</span>
                   <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

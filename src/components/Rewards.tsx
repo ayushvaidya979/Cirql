@@ -77,7 +77,7 @@ export const Rewards: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-sans">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-sans text-gradient-glass">
             Turn Eco-Coins into Real-World Rewards
           </h2>
 
@@ -87,7 +87,7 @@ export const Rewards: React.FC = () => {
         </div>
 
         {/* DARK GREEN BALANCE BANNER */}
-        <div className="bg-[#113123] rounded-3xl p-8 sm:p-10 text-white shadow-2xl mb-16 border border-emerald-500/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="bg-[#2a5247] rounded-3xl p-8 sm:p-10 text-white shadow-2xl mb-16 border border-emerald-500/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           
           <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 shadow-glow shrink-0">
@@ -169,7 +169,7 @@ export const Rewards: React.FC = () => {
                       isRedeemed
                         ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                         : canAfford
-                        ? 'bg-[#1b4332] hover:bg-[#113123] text-white shadow-sm hover:scale-[1.02]'
+                        ? 'bg-[#2d6457] hover:bg-[#234d40] text-white shadow-sm hover:scale-[1.02]'
                         : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
                     }`}
                   >

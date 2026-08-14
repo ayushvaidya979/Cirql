@@ -56,22 +56,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
-        isScrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-slate-100 py-3'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'glass-nav py-3'
           : 'bg-transparent py-5'
-      }`}
+        }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-14">
         <div className="flex items-center justify-between">
-          
+
           {/* LEFT SIDE: Cirql Logo & Tagline */}
           <div
             className="flex items-center gap-3 cursor-pointer flex-shrink-0"
             onClick={(e) => handleNavClick(e as any, '#home')}
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#1b4332] to-[#2d6a4f] p-0.5 shadow-md flex items-center justify-center group hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-[#1b4332] rounded-[14px] flex items-center justify-center relative overflow-hidden">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#234d40] to-[#2d6a4f] p-0.5 shadow-md flex items-center justify-center group hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full bg-[#234d40] rounded-[14px] flex items-center justify-center relative overflow-hidden">
                 {/* Leaf */}
                 <Leaf
                   className="w-6 h-6 text-emerald-400 absolute opacity-90 group-hover:scale-110 transition-transform duration-300"
@@ -87,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
             <div>
               <div className="flex items-center gap-1">
                 <span className="text-2xl font-extrabold tracking-tight text-slate-900 font-sans">
-                  Cir<span className="text-[#1b4332]">ql</span>
+                  Cir<span className="text-[#234d40]">ql</span>
                 </span>
               </div>
 
@@ -106,13 +105,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`text-base font-medium transition-colors relative py-1 ${
-                    isActive ? 'text-[#193829] font-bold' : 'text-[#2b2b2b] hover:text-[#193829]'
-                  }`}
+                  className={`text-base font-medium transition-colors relative py-1 ${isActive ? 'text-[#234d40] font-bold' : 'text-[#2b2b2b] hover:text-[#234d40]'
+                    }`}
                 >
                   {link.name}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#193829] rounded-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#234d40] rounded-full" />
                   )}
                 </a>
               );
@@ -123,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
           <div className="hidden sm:flex items-center gap-4">
             <button
               onClick={() => onOpenAuth('signin')}
-              className="text-base font-medium text-[#2b2b2b] hover:text-[#193829] transition-colors py-2 px-1"
+              className="text-base font-medium text-[#2b2b2b] hover:text-[#2d6457] transition-colors py-2 px-1"
             >
               Sign In
             </button>
@@ -132,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
 
             <button
               onClick={() => onOpenAuth('login')}
-              className="flex items-center gap-2 bg-[#193829] hover:bg-[#11281c] text-white px-6 py-2.5 rounded-full font-medium text-base transition-all duration-200 hover:scale-[1.02] shadow-2xs"
+              className="flex items-center gap-2 bg-[#2d6457] hover:bg-[#234d40] text-white px-6 py-2.5 rounded-full font-medium text-base transition-all duration-200 hover:scale-[1.02] shadow-2xs"
             >
               <User className="w-4 h-4 text-white" />
               <span>Login</span>
@@ -155,18 +153,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 shadow-lg px-6 pt-4 pb-6 mt-3 animate-in slide-in-from-top duration-200">
+        <div className="lg:hidden glass-card border-b px-6 pt-4 pb-6 mt-3 animate-in slide-in-from-top duration-200">
           <div className="flex flex-col space-y-3">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className={`px-4 py-2.5 rounded-xl text-base font-medium transition-colors ${
-                  activeSection === link.id
-                    ? 'bg-emerald-50 text-[#193829] font-bold border-l-4 border-[#193829]'
+                className={`px-4 py-2.5 rounded-xl text-base font-medium transition-colors ${activeSection === link.id
+                    ? 'bg-emerald-50 text-[#234d40] font-bold border-l-4 border-[#234d40]'
                     : 'text-slate-700 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 {link.name}
               </a>
@@ -186,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenScanner }) => 
                   setMobileMenuOpen(false);
                   onOpenAuth('login');
                 }}
-                className="w-full text-center py-2.5 rounded-xl text-white font-semibold bg-[#193829] flex items-center justify-center gap-2"
+                className="w-full text-center py-2.5 rounded-xl text-white font-semibold bg-[#2d6457] flex items-center justify-center gap-2"
               >
                 <User className="w-4 h-4 text-white" />
                 Login
