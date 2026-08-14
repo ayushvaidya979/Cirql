@@ -117,17 +117,25 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
           })}
         </div>
 
-        {/* BOTTOM DARK GREEN CTA BANNER (Matching Image 2) */}
-        <div className="bg-[#2a5247] rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-emerald-600/30">
+        {/* BOTTOM PREMIUM GREEN CTA BANNER */}
+        <div className="green-banner rounded-[28px] px-8 sm:px-12 py-8 sm:py-10 text-white flex flex-col md:flex-row items-center justify-between gap-8">
           
-          {/* Subtle Background Glow */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          {/* Leaf watermark */}
+          <svg className="green-banner-leaf" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M60 130 C60 130 10 90 10 50 C10 22 33 5 60 5 C87 5 110 22 110 50 C110 90 60 130 60 130Z" fill="white"/>
+            <path d="M60 130 L60 30" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M60 75 C60 75 35 55 35 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M60 90 C60 90 85 70 85 48" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
 
           <div className="relative z-10 max-w-2xl text-left">
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-3 tracking-tight">
+            <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-emerald-400/90 mb-2">
+              JOIN THE MOVEMENT
+            </p>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-2 tracking-tight leading-tight">
               Ready to turn your old gadgets into green rewards?
             </h3>
-            <p className="text-emerald-200/90 text-sm sm:text-base font-normal">
+            <p className="text-emerald-200/80 text-sm font-medium leading-relaxed">
               Join over 2.5 million users who have recycled responsibly and kept toxic heavy metals out of landfills.
             </p>
           </div>
@@ -135,10 +143,10 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenScanner }) => {
           <div className="relative z-10 shrink-0">
             <button
               onClick={onOpenScanner}
-              className="bg-white hover:bg-emerald-50 text-[#2a5247] px-8 py-4 rounded-full font-bold text-base shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 group"
+              className="bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-7 py-3.5 rounded-full font-extrabold text-sm shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 group"
             >
               <span>Scan E-Waste Now</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
 

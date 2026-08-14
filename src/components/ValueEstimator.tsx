@@ -231,34 +231,42 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
 
           </div>
 
-          {/* RIGHT CARD: LIVE VALUATION PANEL (5 COLS) */}
-          <div className="lg:col-span-5 bg-[#2a5247] rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-emerald-500/30 relative overflow-hidden flex flex-col justify-between min-h-[480px]">
+          {/* RIGHT CARD: LIVE VALUATION PANEL — premium green banner */}
+          <div className="lg:col-span-5 green-banner rounded-[28px] p-7 sm:p-8 text-white flex flex-col justify-between min-h-[480px]">
             
-            {/* Ambient Lighting Background */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            {/* Leaf watermark */}
+            <svg className="green-banner-leaf" style={{top:'12%', transform:'none', width:'clamp(70px,11vw,130px)'}} viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M60 130 C60 130 10 90 10 50 C10 22 33 5 60 5 C87 5 110 22 110 50 C110 90 60 130 60 130Z" fill="white"/>
+              <path d="M60 130 L60 30" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M60 75 C60 75 35 55 35 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M60 90 C60 90 85 70 85 48" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
 
-            <div>
+            <div className="relative z-10">
               {/* Header Badges */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 rounded-full">
+              <div className="flex items-center justify-between mb-5">
+                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/15 px-3 py-1 rounded-full">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span className="text-[10px] font-mono font-bold text-emerald-300 uppercase tracking-widest">
                     LIVE VALUATION
                   </span>
                 </div>
-                <span className="text-xs font-semibold bg-emerald-950/80 px-3 py-1 rounded-full text-emerald-200 border border-emerald-800">
+                <span className="text-xs font-semibold bg-white/10 border border-white/15 px-3 py-1 rounded-full text-emerald-200">
                   {condition}
                 </span>
               </div>
 
               {/* Selected Device Title */}
-              <h3 className="text-2xl font-bold text-white mb-4">
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-emerald-400/80 mb-1">
+                SELECTED DEVICE
+              </p>
+              <h3 className="text-xl font-bold text-white mb-5 leading-snug">
                 {brand} {category}
               </h3>
 
               {/* ESTIMATED CASH BUYBACK DISPLAY */}
-              <div className="mb-6 bg-emerald-950/50 p-6 rounded-2xl border border-emerald-800/60 relative">
-                <p className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1">
+              <div className="mb-5 bg-black/20 border border-white/10 p-5 rounded-2xl">
+                <p className="text-[10px] font-mono font-bold text-emerald-400/90 uppercase tracking-wider mb-1">
                   ESTIMATED CASH BUYBACK
                 </p>
                 <div className="flex items-baseline gap-2">
@@ -267,39 +275,39 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
                   </span>
                   <span className="text-lg font-bold text-emerald-300">INR</span>
                 </div>
-                <p className="text-[11px] text-emerald-200/70 mt-2 font-medium">
+                <p className="text-[11px] text-emerald-200/60 mt-1.5 font-medium">
                   Guaranteed price locks for 7 days upon scheduling pickup.
                 </p>
               </div>
 
               {/* Yields & Bonus Breakdown */}
-              <div className="space-y-3 mb-8 bg-emerald-950/30 p-4 rounded-xl border border-emerald-900/50 text-xs">
+              <div className="space-y-2.5 mb-6 bg-black/15 border border-white/08 p-4 rounded-xl text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-emerald-200/80">Precious Metals Yield:</span>
+                  <span className="text-emerald-200/70">Precious Metals Yield:</span>
                   <span className="font-bold text-emerald-300">{metalYields}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-emerald-200/80">Green Reward Bonus:</span>
+                  <span className="text-emerald-200/70">Green Reward Bonus:</span>
                   <span className="font-bold text-amber-300">+{ecoCoins} Eco-Coins</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-emerald-200/80">Doorstep Pickup:</span>
+                  <span className="text-emerald-200/70">Doorstep Pickup:</span>
                   <span className="font-bold text-white">Free &amp; Insured</span>
                 </div>
               </div>
             </div>
 
             {/* CTA & Security Banner */}
-            <div>
+            <div className="relative z-10">
               <button
                 onClick={() => onOpenScanner(estimatedCash, `${brand} ${category}`)}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-base py-4 px-6 rounded-2xl shadow-glow hover:shadow-glow-lg transition-all duration-300 flex items-center justify-center gap-2 group mb-4"
+                className="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-sm py-3.5 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group mb-3"
               >
                 <span>Scan &amp; Lock This Price</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <div className="flex items-center justify-center gap-2 text-emerald-300/80 text-xs">
+              <div className="flex items-center justify-center gap-2 text-emerald-300/70 text-xs">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>Zero Data Risk — Military Grade Data Wipe Included</span>
               </div>

@@ -86,34 +86,51 @@ export const Rewards: React.FC = () => {
           </p>
         </div>
 
-        {/* DARK GREEN BALANCE BANNER */}
-        <div className="bg-[#2a5247] rounded-3xl p-8 sm:p-10 text-white shadow-2xl mb-16 border border-emerald-500/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        {/* ── PREMIUM GREEN BALANCE BANNER ── */}
+        <div className="green-banner rounded-[28px] px-6 sm:px-10 py-6 sm:py-7 text-white mb-16 flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-0">
           
-          <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 shadow-glow shrink-0">
-              <Coins className="w-10 h-10" />
-            </div>
+          {/* Leaf watermark SVG */}
+          <svg className="green-banner-leaf" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M60 130 C60 130 10 90 10 50 C10 22 33 5 60 5 C87 5 110 22 110 50 C110 90 60 130 60 130Z" fill="white"/>
+            <path d="M60 130 L60 30" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M60 75 C60 75 35 55 35 35" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M60 90 C60 90 85 70 85 48" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
 
+          {/* LEFT: Eco-Coins balance */}
+          <div className="flex items-center gap-4 sm:gap-5 relative z-10">
+            <div className="green-banner-icon w-14 h-14 sm:w-16 sm:h-16 shrink-0">
+              <Coins className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-300" />
+            </div>
             <div>
-              <p className="text-xs font-mono font-bold text-emerald-300 uppercase tracking-widest mb-1">
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-emerald-400/90 mb-0.5">
                 YOUR GREEN BALANCE
               </p>
-              <div className="flex items-baseline gap-3 justify-center sm:justify-start">
-                <span className="text-4xl sm:text-5xl font-extrabold font-sans text-white tracking-tight">
+              <div className="flex items-baseline gap-2.5">
+                <span className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-sans">
                   {balance.toLocaleString()}
                 </span>
-                <span className="text-xl font-bold text-emerald-300">Eco-Coins</span>
+                <span className="text-base sm:text-lg font-bold text-emerald-300">Eco-Coins</span>
               </div>
-              <p className="text-xs text-emerald-200/80 mt-1 font-medium">
-                Approx Cash Value: <span className="font-bold text-white">₹{Math.round(balance * 1.25).toLocaleString()} INR</span>
+              <p className="text-[11px] text-emerald-300/70 mt-0.5 font-semibold">
+                Approx Cash Value: <span className="text-white font-bold">₹{Math.round(balance * 1.25).toLocaleString()} INR</span>
               </p>
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 border-t md:border-t-0 md:border-l border-emerald-800/80 pt-6 md:pt-0 md:pl-8">
-            <div className="text-center sm:text-right">
-              <span className="text-3xl font-extrabold text-amber-300 block">{co2Saved} kg</span>
-              <span className="text-xs text-emerald-200 font-semibold">CO₂ Emissions Saved</span>
+          {/* RIGHT: CO₂ stat */}
+          <div className="green-banner-divider flex items-center gap-4 relative z-10 pl-0 sm:pl-8 pt-4 sm:pt-0 border-t sm:border-t-0 border-emerald-700/40 w-full sm:w-auto justify-center sm:justify-start">
+            <div className="green-banner-icon w-10 h-10 shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-emerald-300" stroke="currentColor" strokeWidth="1.8">
+                <path d="M12 2C8 2 4 5.5 4 10c0 5.2 6.4 11.1 7.3 11.9.4.3.9.3 1.3 0C13.6 21.1 20 15.2 20 10c0-4.5-4-8-8-8z"/>
+                <path d="M12 13V7M9.5 9.5L12 7l2.5 2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <span className="text-2xl sm:text-3xl font-extrabold text-white block leading-tight">
+                {co2Saved} kg
+              </span>
+              <span className="text-[11px] text-emerald-300/80 font-semibold">CO₂ Emissions Saved</span>
             </div>
           </div>
 
