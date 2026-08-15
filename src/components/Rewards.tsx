@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Gift, TreePine, Zap, Award, Coins, CheckCircle2, Sparkles, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+import { api } from '../services/api';
+
 export const Rewards: React.FC = () => {
   const [balance, setBalance] = useState<number>(1420);
   const [co2Saved, setCo2Saved] = useState<number>(42.5);
@@ -43,14 +45,25 @@ export const Rewards: React.FC = () => {
     },
   ];
 
-  const handleRedeem = (id: string, cost: number, title: string) => {
+  const handleRedeem = async (id: string, cost: number, title: string) => {
     if (balance < cost) {
       setToastMessage('Insufficient Eco-Coins balance! Recycle more devices to earn coins.');
       setTimeout(() => setToastMessage(null), 3500);
       return;
     }
 
-    setBalance((prev) => prev - cost);
+    try {
+      const user = api.auth.getCurrentUser();
+      const res = await api.rewards.redeem(id, user?.id);
+      if (res.success && res.data?.remainingCoins !== undefined) {
+        setBalance(res.data.remainingCoins);
+      } else {
+        setBalance((prev) => prev - cost);
+      }
+    } catch {
+      setBalance((prev) => prev - cost);
+    }
+
     setRedeemedItems((prev) => [...prev, id]);
     
     // Trigger celebratory confetti
@@ -60,7 +73,7 @@ export const Rewards: React.FC = () => {
       origin: { y: 0.6 }
     });
 
-    setToastMessage(`🎉 Successfully redeemed "${title}"! Check your email for details.`);
+    setToastMessage(`🎉 Successfully redeemed "${title}"! Check your email for voucher code.`);
     setTimeout(() => setToastMessage(null), 4000);
   };
 

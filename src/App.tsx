@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
@@ -17,51 +17,107 @@ import { AIScannerModal } from './components/AIScannerModal';
 import { AuthModal } from './components/AuthModal';
 import { BookingModal } from './components/BookingModal';
 import { Recycler } from './types';
+import { api, UserProfile } from './services/api';
 
 export function App() {
+  const [user, setUser] = useState<UserProfile | null>(() => api.auth.getCurrentUser());
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerVal, setScannerVal] = useState(3851);
   const [scannerDevice, setScannerDevice] = useState('Apple Smartphone');
 
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'login'>('login');
+  const [authMode, setAuthMode] = useState<'signin' | 'login'>('signin');
 
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedRecycler, setSelectedRecycler] = useState<Recycler | null>(null);
 
-  const handleOpenScanner = (calcVal?: number, deviceName?: string) => {
-    if (calcVal) setScannerVal(calcVal);
-    if (deviceName) setScannerDevice(deviceName);
-    setScannerOpen(true);
-  };
+  // Sync session with backend on load
+  useEffect(() => {
+    const token = localStorage.getItem('cirql_token');
+    if (token) {
+      api.auth.getMe().then((res) => {
+        if (res.success && res.data?.user) {
+          setUser(res.data.user);
+          localStorage.setItem('cirql_user', JSON.stringify(res.data.user));
+        }
+      }).catch(() => {
+        // Token expired or invalid
+      });
+    }
+  }, []);
 
   const handleOpenAuth = (mode: 'signin' | 'login') => {
     setAuthMode(mode);
     setAuthModalOpen(true);
   };
 
+  const handleLogout = () => {
+    api.auth.logout();
+    setUser(null);
+  };
+
+  const handleAuthSuccess = (authUser: UserProfile) => {
+    setUser(authUser);
+    if (pendingAction) {
+      const actionToRun = pendingAction;
+      setPendingAction(null);
+      setTimeout(() => {
+        actionToRun();
+      }, 300);
+    }
+  };
+
+  // Auth gate helper: prompts sign-in popup if user is not authenticated
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      setPendingAction(() => action);
+      handleOpenAuth('signin');
+    } else {
+      action();
+    }
+  };
+
+  // 1. Scan your device / Discover true value CTA
+  const handleOpenScanner = (calcVal?: number, deviceName?: string) => {
+    requireAuth(() => {
+      if (calcVal) setScannerVal(calcVal);
+      if (deviceName) setScannerDevice(deviceName);
+      setScannerOpen(true);
+    });
+  };
+
+  // 2. Map section / Recycler drop-off booking CTA
   const handleBookDropoff = (recycler: Recycler) => {
-    setSelectedRecycler(recycler);
-    setBookingModalOpen(true);
+    requireAuth(() => {
+      setSelectedRecycler(recycler);
+      setBookingModalOpen(true);
+    });
   };
 
   return (
     <div className="min-h-screen bg-[#f8faf7] text-slate-900 font-sans selection:bg-emerald-600 selection:text-white flex flex-col">
-      {/* Navigation */}
-      <Navbar onOpenAuth={handleOpenAuth} onOpenScanner={() => handleOpenScanner()} />
+      {/* Navigation with dynamic Auth / Profile Logo */}
+      <Navbar
+        user={user}
+        onOpenAuth={handleOpenAuth}
+        onOpenScanner={() => handleOpenScanner()}
+        onLogout={handleLogout}
+      />
 
       {/* Main Page Content */}
       <main className="flex-grow">
-        {/* 01 HERO */}
+        {/* 01 HERO (Scan CTA protected by Auth gate) */}
         <Hero onOpenScanner={() => handleOpenScanner()} />
 
         {/* 02 HOW CIRQL WORKS */}
         <HowItWorks onOpenScanner={() => handleOpenScanner()} />
 
-        {/* 03 VALUE ESTIMATOR */}
+        {/* 03 VALUE ESTIMATOR (Discover Value CTA protected by Auth gate) */}
         <ValueEstimator onOpenScanner={handleOpenScanner} />
 
-        {/* 04 RECYCLER LOCATOR */}
+        {/* 04 RECYCLER LOCATOR (Book Drop-off CTA protected by Auth gate) */}
         <RecyclerLocator onBookDropoff={handleBookDropoff} />
 
         {/* 05 GREEN REWARDS */}
@@ -100,7 +156,11 @@ export function App() {
       <AuthModal
         isOpen={authModalOpen}
         mode={authMode}
-        onClose={() => setAuthModalOpen(false)}
+        onClose={() => {
+          setAuthModalOpen(false);
+          setPendingAction(null);
+        }}
+        onAuthSuccess={handleAuthSuccess}
       />
 
       <BookingModal

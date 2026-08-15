@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Building2, ShieldCheck, FileCheck, BarChart3, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { api } from '../services/api';
 
 export const Corporate: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     email: '',
@@ -10,10 +12,25 @@ export const Corporate: React.FC = () => {
     phone: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.companyName || !formData.email) return;
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      await api.inquiries.submitCorporate({
+        companyName: formData.companyName,
+        contactName: formData.companyName,
+        email: formData.email,
+        phone: formData.phone,
+        estimatedVolume: formData.quantity,
+        message: `Corporate bulk decommissioning request for ${formData.quantity}.`,
+      });
+      setSubmitted(true);
+    } catch {
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

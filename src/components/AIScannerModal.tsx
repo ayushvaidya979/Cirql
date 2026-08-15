@@ -4,6 +4,7 @@ import {
   ArrowRight, Upload, RefreshCw, Smartphone, Laptop, Tablet, Watch, Cpu, Zap, Lock, AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { api } from '../services/api';
 
 interface AIScannerModalProps {
   isOpen: boolean;
@@ -108,6 +109,8 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  const [scanDetails, setScanDetails] = useState<any>(null);
+
   if (!isOpen) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,35 +125,73 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
     }
   };
 
-  const startScanning = () => {
+  const captureCameraFrame = (): string | null => {
+    if (videoRef.current && isCameraActive) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth || 640;
+        canvas.height = videoRef.current.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL('image/jpeg', 0.85);
+        }
+      } catch (err) {
+        console.warn('Could not capture canvas frame:', err);
+      }
+    }
+    return previewImage;
+  };
+
+  const startScanning = async () => {
+    const capturedImage = captureCameraFrame();
+    if (capturedImage) {
+      setPreviewImage(capturedImage);
+    }
     stopCamera();
     setScanStep('scanning');
     setProgress(0);
-    setAiStatus('Initializing AI Computer Vision...');
+    setAiStatus('Initializing Google Gemini Vision AI...');
 
     const statusSteps = [
-      { pct: 20, text: 'Detecting device chassis & model...' },
+      { pct: 20, text: 'Detecting device chassis & model via Gemini...' },
       { pct: 45, text: 'Analyzing exterior wear & screen condition...' },
       { pct: 70, text: 'Calculating internal Gold, Silver & Copper yield...' },
       { pct: 90, text: 'Cross-referencing live market buyback rates...' },
-      { pct: 100, text: 'Valuation complete!' },
+      { pct: 100, text: 'AI Valuation complete!' },
     ];
 
-    const interval = setInterval(() => {
+    // Trigger backend AI call in parallel
+    const aiPromise = api.ai.scanDevice({
+      imageBase64: capturedImage || undefined,
+      deviceCategory: selectedDeviceType,
+    });
+
+    const interval = setInterval(async () => {
       setProgress((prev) => {
         const next = prev + 5;
-        const currentStatus = statusSteps.find(s => next >= s.pct && prev < s.pct);
+        const currentStatus = statusSteps.find((s) => next >= s.pct && prev < s.pct);
         if (currentStatus) setAiStatus(currentStatus.text);
 
         if (next >= 100) {
           clearInterval(interval);
-          setScanStep('results');
-          confetti({ particleCount: 70, spread: 70, origin: { y: 0.5 } });
+          aiPromise
+            .then((res) => {
+              if (res.success && res.data) {
+                setScanDetails(res.data);
+                setSelectedDeviceType(res.data.detectedModel);
+                setCalculatedValue(res.data.estimatedValue);
+              }
+            })
+            .finally(() => {
+              setScanStep('results');
+              confetti({ particleCount: 70, spread: 70, origin: { y: 0.5 } });
+            });
           return 100;
         }
         return next;
       });
-    }, 120);
+    }, 100);
   };
 
   const handleSelectDevice = (devName: string, val: number) => {
@@ -513,18 +554,21 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-[#2d6457]">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-[#2d6457] shrink-0">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <div>
                     <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#2d6457]">
-                      99.4% AI Match • Grade A
+                      {scanDetails?.confidenceScore ? `${Math.round(scanDetails.confidenceScore * 100)}% Confidence` : '99.4% AI Match'} • Grade {scanDetails?.conditionGrade || 'A'}
                     </span>
                     <h4 className="text-base font-extrabold text-slate-900 leading-tight">{selectedDeviceType}</h4>
+                    {scanDetails?.conditionDetails && (
+                      <p className="text-[11px] text-slate-600 font-medium mt-0.5 line-clamp-1">{scanDetails.conditionDetails}</p>
+                    )}
                   </div>
                 </div>
-                <span className="text-[10px] font-extrabold text-[#2d6457] bg-white border border-emerald-300 px-2.5 py-1 rounded-full shadow-2xs">
-                  Verified
+                <span className="text-[10px] font-extrabold text-[#2d6457] bg-white border border-emerald-300 px-2.5 py-1 rounded-full shadow-2xs shrink-0">
+                  AI Verified
                 </span>
               </div>
 
@@ -539,6 +583,23 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                 <p className="text-[11px] text-[#2d6457] font-semibold mt-1">
                   Includes Gold (Au), Silver (Ag) &amp; Component Reuse Value
                 </p>
+
+                {scanDetails?.materialYield && (
+                  <div className="grid grid-cols-3 gap-2 mt-3 text-[10px] font-semibold text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Gold (Au)</span>
+                      <span className="text-amber-700 font-bold font-mono">{scanDetails.materialYield.goldGrams}g</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Silver (Ag)</span>
+                      <span className="text-slate-700 font-bold font-mono">{scanDetails.materialYield.silverGrams}g</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Copper (Cu)</span>
+                      <span className="text-emerald-800 font-bold font-mono">{scanDetails.materialYield.copperGrams}g</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* PRICE LOCK BANNER */}

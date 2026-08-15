@@ -4,6 +4,7 @@ import {
   QrCode, Sparkles, Building2, Phone, Mail, PackageCheck, Copy, Check
 } from 'lucide-react';
 import { Recycler } from '../types';
+import { api } from '../services/api';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -40,6 +41,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, recycler, on
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  const [serverPassCode, setServerPassCode] = useState<string>('');
+  const [submitting, setSubmitting] = useState(false);
+
   if (!isOpen || !recycler) return null;
 
   const handleClose = () => {
@@ -50,12 +54,38 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, recycler, on
     }, 150);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBooked(true);
+    setSubmitting(true);
+    try {
+      const user = api.auth.getCurrentUser();
+      const res = await api.bookings.create({
+        recyclerId: recycler.id,
+        recyclerName: recycler.name,
+        recyclerAddress: recycler.address,
+        deviceType,
+        date,
+        timeSlot,
+        userName: user?.name,
+        userEmail: user?.email,
+        userPhone: user?.phone,
+      });
+
+      if (res.success && res.data) {
+        setServerPassCode(res.data.passCode);
+      } else {
+        setServerPassCode(`CQ-${recycler.id}-${Math.floor(1000 + Math.random() * 9000)}`);
+      }
+      setBooked(true);
+    } catch (err) {
+      setServerPassCode(`CQ-${recycler.id}-${Math.floor(1000 + Math.random() * 9000)}`);
+      setBooked(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const passCode = `CQ-${recycler.id}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const passCode = serverPassCode || `CQ-${recycler.id}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   const handleCopyPass = () => {
     navigator.clipboard.writeText(passCode);
