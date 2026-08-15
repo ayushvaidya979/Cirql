@@ -955,6 +955,38 @@
   ],
   "scans": [
     {
+      "id": "scan-1786786087700",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.94,
+      "estimatedValue": 3850,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 16.2,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T09:28:07.700Z"
+    },
+    {
+      "id": "scan-1786785744569",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.94,
+      "estimatedValue": 3850,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 16.2,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T09:22:24.569Z"
+    },
+    {
       "id": "scan-1786783919549",
       "deviceType": "Apple Smartphone",
       "detectedModel": "Apple Smartphone",

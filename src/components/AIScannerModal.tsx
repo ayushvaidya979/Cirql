@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Camera, Scan, Sparkles, CheckCircle2, ShieldCheck,
-  ArrowRight, Upload, RefreshCw, Smartphone, Laptop, Tablet, Watch, Cpu, Zap, Lock, AlertCircle
+  ArrowRight, Upload, RefreshCw, Smartphone, Laptop, Tablet, Watch, Cpu, Zap, Lock,
+  AlertCircle, AlertTriangle, HelpCircle, ImageOff, Check
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { api } from '../services/api';
@@ -13,13 +14,16 @@ interface AIScannerModalProps {
   initialDevice?: string;
 }
 
+type ScanStep = 'upload' | 'scanning' | 'results' | 'error';
+type ErrorType = 'not_uploaded' | 'unrecognized' | 'network_error';
+
 export const AIScannerModal: React.FC<AIScannerModalProps> = ({
   isOpen,
   onClose,
   initialValue = 3851,
   initialDevice = 'Apple Smartphone',
 }) => {
-  const [scanStep, setScanStep] = useState<'upload' | 'scanning' | 'results'>('upload');
+  const [scanStep, setScanStep] = useState<ScanStep>('upload');
   const [scanMode, setScanMode] = useState<'camera' | 'upload'>('camera');
   const [progress, setProgress] = useState(0);
   const [aiStatus, setAiStatus] = useState('Initializing AI Vision...');
@@ -35,6 +39,12 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Error handling state
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<ErrorType>('not_uploaded');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [scanDetails, setScanDetails] = useState<any>(null);
 
   const deviceCategories = [
     { name: 'Apple Smartphone', icon: Smartphone, defaultVal: 3851 },
@@ -56,6 +66,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
   // Start live webcam camera stream
   const startCameraStream = async () => {
     setCameraError(null);
+    setUploadError(null);
     setScanMode('camera');
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -82,6 +93,8 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
       setSelectedDeviceType(initialDevice);
       setPreviewImage(null);
       setCameraError(null);
+      setUploadError(null);
+      setScanDetails(null);
       setAnimIn(false);
       requestAnimationFrame(() => setTimeout(() => setAnimIn(true), 10));
     } else {
@@ -109,13 +122,12 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const [scanDetails, setScanDetails] = useState<any>(null);
-
   if (!isOpen) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setUploadError(null);
       stopCamera();
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -143,7 +155,26 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
     return previewImage;
   };
 
+  const triggerErrorState = (type: ErrorType, msg: string) => {
+    stopCamera();
+    setErrorType(type);
+    setErrorMessage(msg);
+    setScanStep('error');
+  };
+
   const startScanning = async () => {
+    // 1. Check if device image is uploaded or camera is active
+    if (!previewImage && !isCameraActive) {
+      setUploadError('Device image not uploaded. Please upload a clear photo or turn on the camera.');
+      if (scanMode === 'upload') {
+        fileInputRef.current?.click();
+      } else {
+        startCameraStream();
+      }
+      return;
+    }
+
+    setUploadError(null);
     const capturedImage = captureCameraFrame();
     if (capturedImage) {
       setPreviewImage(capturedImage);
@@ -178,20 +209,38 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
           aiPromise
             .then((res) => {
               if (res.success && res.data) {
+                // If model confidence is unusually low or unidentifiable
+                if (res.data.confidenceScore && res.data.confidenceScore < 0.40) {
+                  triggerErrorState(
+                    'unrecognized',
+                    "Couldn't identify the device in the photo. The image may be blurry, poorly lit, or not an electronic device."
+                  );
+                  return;
+                }
                 setScanDetails(res.data);
                 setSelectedDeviceType(res.data.detectedModel);
                 setCalculatedValue(res.data.estimatedValue);
+                setScanStep('results');
+                confetti({ particleCount: 70, spread: 70, origin: { y: 0.5 } });
+              } else {
+                triggerErrorState(
+                  'unrecognized',
+                  res.message || "Couldn't identify the electronic device. Please try re-uploading a clearer photo."
+                );
               }
             })
-            .finally(() => {
-              setScanStep('results');
-              confetti({ particleCount: 70, spread: 70, origin: { y: 0.5 } });
+            .catch((err) => {
+              console.warn('AI Scan API Error:', err);
+              triggerErrorState(
+                'network_error',
+                'Network connection error during AI diagnosis. Please check your connection and try again.'
+              );
             });
           return 100;
         }
         return next;
       });
-    }, 100);
+    }, 90);
   };
 
   const handleSelectDevice = (devName: string, val: number) => {
@@ -208,6 +257,24 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
     onClose();
   };
 
+  const handleTryAgain = () => {
+    setScanStep('upload');
+    setProgress(0);
+    setPreviewImage(null);
+    setUploadError(null);
+    setCameraError(null);
+    if (scanMode === 'upload') {
+      setTimeout(() => fileInputRef.current?.click(), 100);
+    } else {
+      startCameraStream();
+    }
+  };
+
+  const handleManualSelectionFallback = (categoryName: string, defaultVal: number) => {
+    handleSelectDevice(categoryName, defaultVal);
+    setScanStep('upload');
+  };
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
@@ -218,33 +285,27 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
       }}
       onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}
     >
-      {/* ── LIGHT THEMED LIQUID GLASS MODAL PANEL ── */}
+      {/* ── MODAL CONTAINER ── */}
       <div
-        className="relative w-full max-w-md flex flex-col overflow-hidden"
+        className="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl transition-all duration-300"
         style={{
-          borderRadius: 28,
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(30px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(170%)',
-          border: '1px solid rgba(255, 255, 255, 0.95)',
-          boxShadow: '0 30px 90px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 1)',
-          transform: animIn ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.95)',
+          background: 'rgba(255, 255, 255, 0.94)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(255, 255, 255, 0.8)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)',
+          transform: animIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
           opacity: animIn ? 1 : 0,
-          transition: 'transform 0.35s cubic-bezier(0.34, 1.46, 0.64, 1), opacity 0.25s ease',
         }}
       >
-        {/* Top ambient highlight line */}
+        {/* ── HEADER ── */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1.5px]"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(64, 145, 108, 0.5), transparent)' }}
-        />
-
-        {/* ── MODAL HEADER ── */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-200/70 shrink-0 bg-white/40">
+          className="flex items-center justify-between px-6 py-4 border-b border-slate-100/80"
+          style={{ background: 'rgba(255,255,255,0.6)' }}
+        >
           <div className="flex items-center gap-3">
             <div
-              className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0"
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{
                 background: 'rgba(64, 145, 108, 0.12)',
                 border: '1px solid rgba(64, 145, 108, 0.25)',
@@ -302,7 +363,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                     setScanMode('camera');
                     startCameraStream();
                   }}
-                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${
+                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     scanMode === 'camera'
                       ? 'bg-[#2d6457] text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -319,7 +380,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                     setScanMode('upload');
                     fileInputRef.current?.click();
                   }}
-                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${
+                  className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     scanMode === 'upload'
                       ? 'bg-[#2d6457] text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
@@ -332,12 +393,14 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
 
               {/* LIVE CAMERA / UPLOAD VIEWPORT */}
               <div
-                className="group relative flex flex-col items-center justify-center h-56 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm"
+                className={`group relative flex flex-col items-center justify-center h-56 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm ${
+                  uploadError ? 'border-2 border-amber-500 ring-2 ring-amber-200/80 bg-amber-50/50' : ''
+                }`}
                 style={{
-                  background: 'rgba(240, 253, 244, 0.65)',
+                  background: uploadError ? 'rgba(254, 243, 199, 0.4)' : 'rgba(240, 253, 244, 0.65)',
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
-                  border: '1.5px dashed rgba(64, 145, 108, 0.4)',
+                  border: uploadError ? '2px dashed #f59e0b' : '1.5px dashed rgba(64, 145, 108, 0.4)',
                   boxShadow: '0 4px 24px rgba(64, 145, 108, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
                 }}
               >
@@ -369,7 +432,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                       <button
                         type="button"
                         onClick={startScanning}
-                        className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-bold shadow-sm"
+                        className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-bold shadow-sm cursor-pointer"
                       >
                         Capture &amp; Scan
                       </button>
@@ -388,7 +451,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-lg text-xs font-bold shadow-sm"
+                        className="bg-white/80 hover:bg-white text-slate-800 p-1.5 rounded-lg text-xs font-bold shadow-sm cursor-pointer"
                       >
                         Change Photo
                       </button>
@@ -443,10 +506,28 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                 </div>
               )}
 
+              {/* UPLOAD ERROR ALERT (DEVICE NOT UPLOADED) */}
+              {uploadError && (
+                <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-xs animate-in fade-in duration-200">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+                  <span className="flex-1">{uploadError}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScanMode('upload');
+                      fileInputRef.current?.click();
+                    }}
+                    className="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer"
+                  >
+                    Upload Now
+                  </button>
+                </div>
+              )}
+
               {/* QUICK DEVICE PRESETS */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                  Or select device preset
+                  Or select device category
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {deviceCategories.map((cat) => {
@@ -457,7 +538,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                         key={cat.name}
                         type="button"
                         onClick={() => handleSelectDevice(cat.name, cat.defaultVal)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-emerald-100 text-[#2d6457] border border-emerald-300 shadow-xs'
                             : 'bg-white/80 text-slate-600 border border-slate-200/80 hover:bg-white hover:text-slate-900'
@@ -475,7 +556,7 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
               <button
                 type="button"
                 onClick={startScanning}
-                className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #2d6457 0%, #40916c 60%, #52b788 100%)',
                   boxShadow: '0 4px 20px rgba(45, 106, 79, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25)',
@@ -510,144 +591,246 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                   </div>
                 )}
 
-                {/* Laser scan line */}
+                {/* Laser Scanning Grid Animation */}
                 <div
-                  className="absolute left-0 right-0 h-1 transition-all duration-100 ease-linear z-10"
-                  style={{
-                    top: `${progress}%`,
-                    background: 'linear-gradient(90deg, transparent, #2d6457, #52b788, transparent)',
-                    boxShadow: '0 0 12px #40916c, 0 0 24px #52b788',
-                  }}
+                  className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-laser z-20"
                 />
+
+                {/* Matrix HUD Data Overlays */}
+                <div className="absolute top-2 left-3 text-[9px] font-mono text-emerald-400/80 text-left">
+                  <span>CONFIDENCE: {Math.min(98, 40 + Math.round(progress * 0.58))}%</span><br />
+                  <span>MODEL_AI: ACTIVE</span>
+                </div>
+                <div className="absolute bottom-2 right-3 text-[9px] font-mono text-emerald-400/80 text-right">
+                  <span>SPECTROMETRY: METALS</span><br />
+                  <span>GRID: 256x256</span>
+                </div>
               </div>
 
-              {/* PROGRESS READOUT */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span className="flex items-center gap-1.5 text-[#2d6457] font-mono">
-                    <Zap className="w-3.5 h-3.5 animate-spin" />
-                    {aiStatus}
+              {/* Progress and status */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+                  <span className="flex items-center gap-1.5">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#2d6457]" />
+                    <span>{aiStatus}</span>
                   </span>
-                  <span className="font-mono text-slate-900 font-extrabold">{progress}%</span>
+                  <span className="font-mono text-[#2d6457]">{progress}%</span>
                 </div>
 
-                <div className="h-2.5 w-full rounded-full bg-slate-200/80 overflow-hidden">
+                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#2d6457] via-[#40916c] to-[#52b788] transition-all duration-150 ease-out"
-                    style={{ width: `${progress}%` }}
+                    className="h-full rounded-full transition-all duration-150"
+                    style={{
+                      width: `${progress}%`,
+                      background: 'linear-gradient(90deg, #2d6457, #52b788)',
+                    }}
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* ════ STEP 3: VALUATION RESULTS VIEW ════ */}
+          {/* ════ STEP 3: ERROR STATE (TRY AGAIN / COULDN'T IDENTIFY) ════ */}
+          {scanStep === 'error' && (
+            <div className="py-3 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+              
+              <div className="text-center py-4 bg-rose-50/80 rounded-2xl border border-rose-200/80 p-5">
+                <div className="w-14 h-14 rounded-2xl bg-rose-100 border border-rose-300 text-rose-600 flex items-center justify-center mx-auto mb-3 shadow-xs">
+                  {errorType === 'not_uploaded' ? (
+                    <ImageOff className="w-7 h-7" />
+                  ) : errorType === 'unrecognized' ? (
+                    <HelpCircle className="w-7 h-7" />
+                  ) : (
+                    <AlertTriangle className="w-7 h-7" />
+                  )}
+                </div>
+
+                <h4 className="text-lg font-extrabold text-slate-900 mb-1">
+                  {errorType === 'not_uploaded'
+                    ? 'Device Image Missing'
+                    : errorType === 'unrecognized'
+                    ? "Couldn't Identify Device"
+                    : 'Diagnosis Interrupted'}
+                </h4>
+
+                <p className="text-xs text-slate-600 font-medium max-w-sm mx-auto leading-relaxed">
+                  {errorMessage || "The AI scanner was unable to verify the electronic device. Please try again with a clearer image."}
+                </p>
+              </div>
+
+              {/* Scanning Tips Box */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2">
+                <span className="font-extrabold uppercase text-[10px] text-slate-500 tracking-wider block">
+                  Tips for accurate AI recognition:
+                </span>
+                <ul className="space-y-1.5 text-slate-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Place device in good lighting with minimal glare</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Capture the entire device screen or chassis clearly</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Avoid heavy shadows or blurry camera angles</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Primary Error Recovery Actions */}
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleTryAgain}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition-all bg-[#2d6457] hover:bg-[#1b4332] shadow-md cursor-pointer"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Try Again &amp; Retake Photo</span>
+                </button>
+
+                <div className="pt-2">
+                  <p className="text-[11px] font-bold text-slate-500 mb-2 text-center">
+                    Or select category manually to view estimate:
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {deviceCategories.slice(0, 4).map((cat) => (
+                      <button
+                        key={cat.name}
+                        type="button"
+                        onClick={() => handleManualSelectionFallback(cat.name, cat.defaultVal)}
+                        className="p-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <cat.icon className="w-3.5 h-3.5 text-[#2d6457]" />
+                        <span className="truncate">{cat.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* ════ STEP 4: DIAGNOSTIC RESULTS HUD ════ */}
           {scanStep === 'results' && (
-            <div className="space-y-5">
-              {/* DETECTED DEVICE CARD */}
-              <div
-                className="rounded-2xl p-4 flex items-center justify-between"
-                style={{
-                  background: 'rgba(240, 253, 244, 0.85)',
-                  border: '1px solid rgba(82, 183, 136, 0.35)',
-                  backdropFilter: 'blur(12px)',
-                }}
-              >
+            <div className="space-y-5 animate-in fade-in duration-300">
+
+              {/* Model and Condition Breakdown Card */}
+              <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-[#2d6457] shrink-0">
-                    <CheckCircle2 className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl bg-[#2d6457] text-white flex items-center justify-center shadow-xs">
+                    <Smartphone className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#2d6457]">
-                      {scanDetails?.confidenceScore ? `${Math.round(scanDetails.confidenceScore * 100)}% Confidence` : '99.4% AI Match'} • Grade {scanDetails?.conditionGrade || 'A'}
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#2d6457]">
+                      AI Verified Device
                     </span>
-                    <h4 className="text-base font-extrabold text-slate-900 leading-tight">{selectedDeviceType}</h4>
-                    {scanDetails?.conditionDetails && (
-                      <p className="text-[11px] text-slate-600 font-medium mt-0.5 line-clamp-1">{scanDetails.conditionDetails}</p>
-                    )}
+                    <h4 className="text-base font-extrabold text-slate-900 leading-tight">
+                      {selectedDeviceType}
+                    </h4>
+                    <span className="text-xs font-semibold text-emerald-800">
+                      Condition Grade: {scanDetails?.conditionGrade || 'Grade A (Operational)'}
+                    </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-extrabold text-[#2d6457] bg-white border border-emerald-300 px-2.5 py-1 rounded-full shadow-2xs shrink-0">
-                  AI Verified
-                </span>
+
+                <div className="text-right">
+                  <span className="text-[10px] font-mono font-bold text-slate-400 block">CONFIDENCE</span>
+                  <span className="text-sm font-extrabold text-emerald-700">
+                    {scanDetails?.confidenceScore ? `${Math.round(scanDetails.confidenceScore * 100)}%` : '96%'}
+                  </span>
+                </div>
               </div>
 
-              {/* ESTIMATED VALUE DISPLAY */}
-              <div className="text-center py-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                  Instant Buyback Valuation
-                </p>
-                <p className="mt-1 text-4xl font-extrabold text-slate-900 tracking-tight font-sans">
-                  ₹{calculatedValue.toLocaleString()}
-                </p>
-                <p className="text-[11px] text-[#2d6457] font-semibold mt-1">
-                  Includes Gold (Au), Silver (Ag) &amp; Component Reuse Value
-                </p>
+              {/* Precious Metals Extraction Yield */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 shadow-inner">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Estimated Precious Metal Recovery</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">CPCB METRIC</span>
+                </div>
 
-                {scanDetails?.materialYield && (
-                  <div className="grid grid-cols-3 gap-2 mt-3 text-[10px] font-semibold text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
-                    <div>
-                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Gold (Au)</span>
-                      <span className="text-amber-700 font-bold font-mono">{scanDetails.materialYield.goldGrams}g</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Silver (Ag)</span>
-                      <span className="text-slate-700 font-bold font-mono">{scanDetails.materialYield.silverGrams}g</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Copper (Cu)</span>
-                      <span className="text-emerald-800 font-bold font-mono">{scanDetails.materialYield.copperGrams}g</span>
-                    </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] font-bold text-amber-400 block">Gold (Au)</span>
+                    <span className="text-sm font-extrabold text-white">
+                      {scanDetails?.materialYield?.goldGrams ? `${scanDetails.materialYield.goldGrams}g` : '0.034g'}
+                    </span>
                   </div>
-                )}
+                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] font-bold text-slate-300 block">Silver (Ag)</span>
+                    <span className="text-sm font-extrabold text-white">
+                      {scanDetails?.materialYield?.silverGrams ? `${scanDetails.materialYield.silverGrams}g` : '0.35g'}
+                    </span>
+                  </div>
+                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                    <span className="text-[10px] font-bold text-orange-400 block">Copper (Cu)</span>
+                    <span className="text-sm font-extrabold text-white">
+                      {scanDetails?.materialYield?.copperGrams ? `${scanDetails.materialYield.copperGrams}g` : '16.2g'}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              {/* PRICE LOCK BANNER */}
-              {locked ? (
-                <div
-                  className="rounded-2xl p-4 text-center space-y-1"
-                  style={{
-                    background: 'rgba(240, 253, 244, 0.9)',
-                    border: '1px solid rgba(82, 183, 136, 0.4)',
-                  }}
+              {/* Valuation & Rewards Card */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Guaranteed Buyback Scrap Value
+                  </span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-2xl font-black text-slate-900">₹{calculatedValue.toLocaleString('en-IN')}</span>
+                    <span className="text-xs font-bold text-emerald-600">+ 120 Eco Coins</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLockPrice}
+                  disabled={locked}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    locked
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-[#2d6457] hover:bg-[#1b4332] text-white shadow-md'
+                  }`}
                 >
-                  <p className="text-sm font-extrabold text-[#2d6457] flex items-center justify-center gap-1.5">
-                    <Lock className="w-4 h-4 text-[#2d6457]" />
-                    Price Locked for 7 Days!
-                  </p>
-                  <p className="text-xs text-slate-600 font-medium">
-                    Free doorstep pickup scheduled. Confirmation details sent to your registered email.
-                  </p>
-                </div>
-              ) : (
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={handleLockPrice}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white transition-all hover:scale-[1.01]"
-                    style={{
-                      background: 'linear-gradient(135deg, #2d6457 0%, #40916c 60%, #52b788 100%)',
-                      boxShadow: '0 4px 20px rgba(45, 106, 79, 0.25)',
-                    }}
-                  >
-                    <Lock className="w-4 h-4 text-emerald-100" />
-                    <span>Lock Price &amp; Book</span>
-                  </button>
+                  {locked ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Price Locked!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Lock In Price</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={startScanning}
-                    className="flex items-center justify-center gap-1.5 rounded-xl px-4 py-3.5 text-xs font-bold text-slate-700 transition-all hover:bg-slate-100"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      border: '1px solid rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Rescan</span>
-                  </button>
-                </div>
-              )}
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleTryAgain}
+                  className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Scan Another Device</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Done</span>
+                </button>
+              </div>
 
             </div>
           )}
