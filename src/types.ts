@@ -1,9 +1,19 @@
+export type FacilityCategory = 'Recycler' | 'Refurbisher' | 'Dismantler' | 'Recycler/Dismantler' | 'Kiosk';
+
 export interface Recycler {
   id: string;
   name: string;
-  type: 'AUTHORIZED DISMANTLER' | '24/7 SMART KIOSK' | 'REFURBISHMENT CENTER';
+  type: string;
+  facilityCategory?: FacilityCategory;
+  state?: string;
+  city?: string;
+  regionalOffice?: string;
+  pincode?: string;
   address: string;
-  distance: string;
+  phone?: string;
+  email?: string;
+  capacity?: string | number;
+  distance?: string;
   rating: number;
   openStatus: string;
   lat: number;
@@ -11,6 +21,7 @@ export interface Recycler {
   certifications: string[];
   acceptedTypes: string[];
 }
+
 
 export interface RewardItem {
   id: string;

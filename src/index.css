@@ -86,6 +86,7 @@
 .section-tint-a {
   background: linear-gradient(160deg, #f5f8f5 0%, #eef3ee 100%);
 }
+
 .section-tint-b {
   background: linear-gradient(160deg, #ffffff 0%, #f8faf7 100%);
 }
@@ -94,8 +95,9 @@
 .hero-gradient {
   background: radial-gradient(circle at 70% 30%, #eafaf1 0%, #f4fbf7 40%, #e6f4ea 70%, #f8faf7 100%);
 }
+
 .bg-hero-wave {
-  background: linear-gradient(135deg, rgba(216,243,220,0.5) 0%, rgba(149,213,178,0.3) 50%, rgba(82,183,136,0.1) 100%);
+  background: linear-gradient(135deg, rgba(216, 243, 220, 0.5) 0%, rgba(149, 213, 178, 0.3) 50%, rgba(82, 183, 136, 0.1) 100%);
 }
 
 /* ─────────────────────────────────────────────────────
@@ -110,34 +112,76 @@
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.92);
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
+
 .card-glass:hover {
   box-shadow: 0 8px 36px rgba(0, 0, 0, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #52b788; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #2d6a4f; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #52b788;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2d6a4f;
+}
 
 /* Float animation used by hero */
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
-.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+}
 
 /* Fade Animations */
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(28px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
-.animate-fade-in-up { animation: fadeInUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in { animation: fadeIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
 /* ─────────────────────────────────────────────────────
    PREMIUM GREEN BANNER — shared dark-forest pill design
@@ -182,13 +226,16 @@
 }
 
 /* all direct children should sit above the pseudo-element layers */
-.green-banner > * { position: relative; z-index: 1; }
+.green-banner>* {
+  position: relative;
+  z-index: 1;
+}
 
 /* icon box inside green banner */
 .green-banner-icon {
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
   border-radius: 18px;
   display: flex;
   align-items: center;
