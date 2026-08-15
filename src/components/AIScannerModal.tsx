@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { api } from '../services/api';
+import { METAL_DATABASE } from '../data/metalContentData';
+
 
 interface AIScannerModalProps {
   isOpen: boolean;
@@ -745,36 +747,70 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
               </div>
 
               {/* Precious Metals Extraction Yield */}
-              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 shadow-inner">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Estimated Precious Metal Recovery</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">CPCB METRIC</span>
-                </div>
+              {(() => {
+                let devMetals: { goldG: number; silverG: number; copperG: number } | null = null;
+                const devName = (selectedDeviceType || '').toLowerCase();
+                for (const cat of ['Smartphone', 'Laptop / PC']) {
+                  const brands = (METAL_DATABASE as any)[cat] || {};
+                  for (const b of Object.keys(brands)) {
+                    const models = brands[b] || {};
+                    for (const m of Object.keys(models)) {
+                      if (devName.includes(m.toLowerCase()) || `${b} ${m}`.toLowerCase() === devName) {
+                        devMetals = models[m].metals;
+                        break;
+                      }
+                    }
+                    if (devMetals) break;
+                  }
+                  if (devMetals) break;
+                }
 
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] font-bold text-amber-400 block">Gold (Au)</span>
-                    <span className="text-sm font-extrabold text-white">
-                      {scanDetails?.materialYield?.goldGrams ? `${scanDetails.materialYield.goldGrams}g` : '0.034g'}
-                    </span>
+                const goldVal = scanDetails?.materialYield?.goldGrams
+                  ? `${scanDetails.materialYield.goldGrams}g`
+                  : devMetals
+                  ? `${(devMetals.goldG * 1000).toFixed(1)}mg`
+                  : '0.034g';
+
+                const silverVal = scanDetails?.materialYield?.silverGrams
+                  ? `${scanDetails.materialYield.silverGrams}g`
+                  : devMetals
+                  ? `${(devMetals.silverG * 1000).toFixed(0)}mg`
+                  : '0.35g';
+
+                const copperVal = scanDetails?.materialYield?.copperGrams
+                  ? `${scanDetails.materialYield.copperGrams}g`
+                  : devMetals
+                  ? `${devMetals.copperG.toFixed(1)}g`
+                  : '16.2g';
+
+                return (
+                  <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 shadow-inner">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Estimated Precious Metal Recovery</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">LAB METRICS</span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                        <span className="text-[10px] font-bold text-amber-400 block">Gold (Au)</span>
+                        <span className="text-sm font-extrabold text-white">{goldVal}</span>
+                      </div>
+                      <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                        <span className="text-[10px] font-bold text-slate-300 block">Silver (Ag)</span>
+                        <span className="text-sm font-extrabold text-white">{silverVal}</span>
+                      </div>
+                      <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
+                        <span className="text-[10px] font-bold text-orange-400 block">Copper (Cu)</span>
+                        <span className="text-sm font-extrabold text-white">{copperVal}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] font-bold text-slate-300 block">Silver (Ag)</span>
-                    <span className="text-sm font-extrabold text-white">
-                      {scanDetails?.materialYield?.silverGrams ? `${scanDetails.materialYield.silverGrams}g` : '0.35g'}
-                    </span>
-                  </div>
-                  <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-[10px] font-bold text-orange-400 block">Copper (Cu)</span>
-                    <span className="text-sm font-extrabold text-white">
-                      {scanDetails?.materialYield?.copperGrams ? `${scanDetails.materialYield.copperGrams}g` : '16.2g'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
+
 
               {/* Valuation & Rewards Card */}
               <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
