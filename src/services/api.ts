@@ -103,7 +103,7 @@ export const api = {
       return json;
     },
 
-    async googleAuth(data: { email?: string; name?: string; avatar?: string; googleId?: string }): Promise<ApiResponse<{ user: UserProfile; token: string }>> {
+    async googleAuth(data: { googleToken: string }): Promise<ApiResponse<{ user: UserProfile; token: string }>> {
       const res = await fetch(`${API_BASE}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
