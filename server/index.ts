@@ -14,9 +14,20 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // Middleware
+import cors from 'cors';
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000'],
-  credentials: true,
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004',
+    'http://localhost:3005',
+    'http://localhost:3006',
+    'https://cirqlweb.netlify.app'
+  ],
+  credentials: true
 }));
 
 // Increase JSON payload limit to accept high-res camera device photos for Gemini Vision AI
