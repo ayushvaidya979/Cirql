@@ -183,10 +183,6 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
   return (
     <section id="value-estimator" className="py-24 bg-[#f8faf7] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<<<<<<< HEAD
-=======
-
->>>>>>> 2b223b5 (feat: update asset references in index.html, enhance AIScannerModal UI, and add new scan data to store.json)
         {/* SECTION HEADER */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 bg-emerald-100/70 border border-emerald-300/60 px-4 py-1.5 rounded-full mb-4 shadow-2xs">
@@ -207,15 +203,8 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
 
         {/* TWO-COLUMN CALCULATOR INTERFACE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-<<<<<<< HEAD
           {/* LEFT CARD: SELECTION FORM (7 COLS) */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-card">
-=======
-
-          {/* LEFT CARD: SELECTION FORM (7 COLS) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-card">
-
->>>>>>> 2b223b5 (feat: update asset references in index.html, enhance AIScannerModal UI, and add new scan data to store.json)
             {/* 1. SELECT DEVICE CATEGORY */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
@@ -236,18 +225,11 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
                       key={cat.name}
                       type="button"
                       onClick={() => handleCategoryChange(cat.name)}
-<<<<<<< HEAD
                       className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${
                         isSelected
                           ? 'bg-[#234d40] text-white border-[#234d40] shadow-md scale-[1.01]'
                           : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40'
                       }`}
-=======
-                      className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all text-center ${isSelected
-                          ? 'bg-[#234d40] text-white border-[#234d40] shadow-md scale-[1.02]'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50'
-                        }`}
->>>>>>> 2b223b5 (feat: update asset references in index.html, enhance AIScannerModal UI, and add new scan data to store.json)
                     >
                       <div className={`p-2.5 rounded-xl ${isSelected ? 'bg-white/10 text-emerald-300' : 'bg-slate-100 text-slate-600'}`}>
                         <IconComp className="w-5 h-5" />
@@ -613,7 +595,6 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
           </div>
 
           {/* RIGHT CARD: LIVE VALUATION PANEL — premium green banner */}
-<<<<<<< HEAD
           <div className="lg:col-span-5 green-banner rounded-[28px] p-7 sm:p-8 text-white flex flex-col justify-between min-h-[560px] sticky top-24">
             {/* Leaf watermark */}
             <svg
@@ -628,13 +609,6 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
                 d="M60 130 C60 130 10 90 10 50 C10 22 33 5 60 5 C87 5 110 22 110 50 C110 90 60 130 60 130Z"
                 fill="white"
               />
-=======
-          <div className="lg:col-span-5 green-banner rounded-[28px] p-7 sm:p-8 text-white flex flex-col justify-between min-h-[480px]">
-
-            {/* Leaf watermark */}
-            <svg className="green-banner-leaf" style={{ top: '12%', transform: 'none', width: 'clamp(70px,11vw,130px)' }} viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M60 130 C60 130 10 90 10 50 C10 22 33 5 60 5 C87 5 110 22 110 50 C110 90 60 130 60 130Z" fill="white" />
->>>>>>> 2b223b5 (feat: update asset references in index.html, enhance AIScannerModal UI, and add new scan data to store.json)
               <path d="M60 130 L60 30" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
               <path d="M60 75 C60 75 35 55 35 35" stroke="white" strokeWidth="2" strokeLinecap="round" />
               <path d="M60 90 C60 90 85 70 85 48" stroke="white" strokeWidth="2" strokeLinecap="round" />
