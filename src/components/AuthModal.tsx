@@ -178,12 +178,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
   const [success, setSuccess] = useState(false);
   const [animIn, setAnimIn] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleButtonInitializedRef = useRef(false);
 
   useEffect(() => {
     setMode(initialMode);
     setFormError('');
     setSuccess(false);
     setSuccessMsg('');
+    googleButtonInitializedRef.current = false;
   }, [initialMode, isOpen]);
 
   useEffect(() => {
@@ -199,8 +201,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
     document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const switchMode = (m: 'signin' | 'login') => {
     setMode(m);
@@ -338,7 +338,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
       return;
     }
 
-    if (googleButtonRef.current.dataset.googleRendered === 'true') {
+    if (googleButtonInitializedRef.current) {
       return;
     }
 
@@ -357,10 +357,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
       width: 280,
     });
 
-    googleButtonRef.current.dataset.googleRendered = 'true';
-  }, [isOpen, mode]);
+    googleButtonInitializedRef.current = true;
+  }, [isOpen, mode, handleGoogleSuccess]);
 
   const isSignIn = mode === 'signin';
+
+  if (!isOpen) return null;
 
   return (
     <div
