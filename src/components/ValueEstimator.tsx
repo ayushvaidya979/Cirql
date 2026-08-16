@@ -9,7 +9,8 @@ import {
   Search,
   Scale,
   Calendar,
-  ChevronDown
+  ChevronDown,
+  TrendingUp
 } from 'lucide-react';
 import {
   getBrandsForCategory,
@@ -17,6 +18,12 @@ import {
   getDeviceModelData,
   DeviceModelData
 } from '../data/metalContentData';
+import {
+  METAL_PRICES,
+  METAL_PRICES_LIST,
+  METAL_PRICES_DATE,
+  calcIntrinsicValue,
+} from '../data/metalPrices';
 
 interface ValueEstimatorProps {
   onOpenScanner: (calculatedVal?: number, deviceName?: string) => void;
@@ -113,27 +120,15 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
     }
   };
 
+  // ── Real-price Metal Valuation using live market dataset ──
+  const metalValuation = useMemo(() => {
+    if (!activeDeviceData) return { total: 0, breakdown: [] };
+    return calcIntrinsicValue(activeDeviceData.metals);
+  }, [activeDeviceData]);
+
   // Dynamic Cash Valuation & Metals Calculation
   const { estimatedCash, ecoCoins, metalsValuation } = useMemo(() => {
-    // Standard live precious metal market prices in INR (per gram)
-    // Gold: ~₹7,200/g, Silver: ~₹88/g, Palladium: ~₹3,100/g, Platinum: ~₹2,800/g, Copper: ~₹0.85/g
-    const GOLD_PRICE_INR = 7200;
-    const SILVER_PRICE_INR = 88;
-    const PALLADIUM_PRICE_INR = 3100;
-    const PLATINUM_PRICE_INR = 2800;
-    const COPPER_PRICE_INR = 0.85;
-
-    let intrinsicMetalValue = 0;
-
-    if (activeDeviceData) {
-      const { goldG, silverG, copperG, palladiumG, platinumG } = activeDeviceData.metals;
-      intrinsicMetalValue =
-        goldG * GOLD_PRICE_INR +
-        silverG * SILVER_PRICE_INR +
-        palladiumG * PALLADIUM_PRICE_INR +
-        platinumG * PLATINUM_PRICE_INR +
-        copperG * COPPER_PRICE_INR;
-    }
+    const intrinsicMetalValue = metalValuation.total;
 
     // Base functional & refurbish component value
     let base = category === 'Laptop / PC' ? 11500 : 4200;
@@ -166,7 +161,8 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
 
     // Calculate total guaranteed cash buyback
     const functionalValue = base * brandMult * ageFactor * condMult;
-    const recoverableMetalCash = intrinsicMetalValue * 1.25 * condMult;
+    // Recoverable metal cash — apply 60% recovery efficiency (real-world smelting yield)
+    const recoverableMetalCash = intrinsicMetalValue * 0.60 * condMult;
     let total = Math.round(functionalValue + recoverableMetalCash);
 
     if (includeAdapter) total += 250;
@@ -176,15 +172,15 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
     return {
       estimatedCash: total,
       ecoCoins: coins,
-      metalsValuation: Math.round(intrinsicMetalValue)
+      metalsValuation: Math.round(intrinsicMetalValue),
     };
-  }, [category, brand, activeDeviceData, ageYears, condition, includeAdapter]);
+  }, [category, brand, metalValuation, ageYears, condition, includeAdapter]);
 
   return (
     <section id="value-estimator" className="py-24 bg-[#f8faf7] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 bg-emerald-100/70 border border-emerald-300/60 px-4 py-1.5 rounded-full mb-4 shadow-2xs">
             <span className="text-sm">⚡</span>
             <span className="text-xs font-bold text-emerald-900 tracking-wide uppercase">
@@ -201,10 +197,122 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
           </p>
         </div>
 
+        {/* ── LIVE MARKET PRICE TICKER — Elegant Emerald Glass with Wave Contours ── */}
+        <div
+          className="mb-10 rounded-2xl overflow-hidden relative shadow-xl"
+          style={{
+            background: 'linear-gradient(135deg, #0e3527 0%, #154433 45%, #1c523e 100%)',
+            border: '1px solid rgba(82, 183, 136, 0.32)',
+            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          {/* Ambient Organic Waves Background */}
+          <svg
+            className="pointer-events-none absolute inset-0 w-full h-full opacity-25"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0,40 C150,90 350,10 500,50 C650,90 850,20 1000,60 C1100,85 1180,45 1200,40 L1200,120 L0,120 Z"
+              fill="url(#ticker-wave-grad)"
+            />
+            <path
+              d="M0,65 C200,20 400,80 600,35 C800,90 1000,30 1200,70 L1200,120 L0,120 Z"
+              fill="none"
+              stroke="rgba(82, 183, 136, 0.35)"
+              strokeWidth="1.2"
+            />
+            <path
+              d="M0,30 C220,75 420,15 640,60 C840,100 1020,40 1200,45"
+              fill="none"
+              stroke="rgba(52, 211, 153, 0.25)"
+              strokeWidth="1"
+              strokeDasharray="4 4"
+            />
+            <defs>
+              <linearGradient id="ticker-wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.18" />
+                <stop offset="50%" stopColor="#34d399" stopOpacity="0.28" />
+                <stop offset="100%" stopColor="#059669" stopOpacity="0.12" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          {/* Top specular highlight sheen */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 45% at 50% 0%, rgba(255, 255, 255, 0.15), transparent 70%)',
+            }}
+          />
+
+          {/* Header bar */}
+          <div
+            className="relative z-10 flex items-center justify-between px-5 py-3 border-b border-white/[0.08] bg-black/15"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-300" />
+              </div>
+              <span className="text-[11px] font-mono font-bold tracking-[0.18em] uppercase text-emerald-200">
+                Live Metal Market Prices — India
+              </span>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-950/70 border border-emerald-400/30 px-3 py-1 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              <span className="text-[10px] font-mono font-semibold text-emerald-200">
+                As of {METAL_PRICES_DATE} · Spot Rates
+              </span>
+            </div>
+          </div>
+
+          {/* Price Grid */}
+          <div className="relative z-10 grid grid-cols-3 sm:grid-cols-6 divide-x divide-white/[0.08]">
+            {[
+              { mp: METAL_PRICES_LIST[0], symbolColor: '#fde047', nameColor: '#fef08a', dot: '#eab308' }, // Gold
+              { mp: METAL_PRICES_LIST[1], symbolColor: '#e2e8f0', nameColor: '#cbd5e1', dot: '#94a3b8' }, // Silver
+              { mp: METAL_PRICES_LIST[2], symbolColor: '#7dd3fc', nameColor: '#bae6fd', dot: '#38bdf8' }, // Platinum
+              { mp: METAL_PRICES_LIST[3], symbolColor: '#5eead4', nameColor: '#99f6e4', dot: '#14b8a6' }, // Palladium
+              { mp: METAL_PRICES_LIST[4], symbolColor: '#fdba74', nameColor: '#fed7aa', dot: '#f97316' }, // Copper
+              { mp: METAL_PRICES_LIST[5], symbolColor: '#7dd3fc', nameColor: '#bae6fd', dot: '#38bdf8' }, // Aluminium
+            ].map(({ mp, symbolColor, nameColor, dot }) => (
+              <div
+                key={mp.symbol}
+                className="group px-3 sm:px-4 py-4 text-center transition-all duration-300 cursor-default hover:bg-white/[0.06] relative"
+              >
+                {/* Element Pill Badge */}
+                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md mb-2 bg-black/20 border border-white/10">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: dot }} />
+                  <span className="text-xs font-mono font-extrabold" style={{ color: symbolColor }}>
+                    {mp.symbol}
+                  </span>
+                  <span className="text-[9px] font-semibold tracking-wide" style={{ color: nameColor }}>
+                    {mp.name.split(' ')[0]}
+                  </span>
+                </div>
+
+                {/* Price Display — clean, professional, non-funky */}
+                <div className="text-base sm:text-lg font-mono font-bold text-white tracking-tight">
+                  ₹{mp.pricePerGram >= 1
+                    ? mp.pricePerGram.toLocaleString('en-IN')
+                    : mp.pricePerGram.toFixed(2)}
+                </div>
+
+                <div className="text-[10px] text-emerald-200/60 font-mono mt-1">
+                  per gram
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* TWO-COLUMN CALCULATOR INTERFACE */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* LEFT CARD: SELECTION FORM (7 COLS) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-card">
+          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between">
             {/* 1. SELECT DEVICE CATEGORY */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
@@ -389,110 +497,11 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
               )}
             </div>
 
-            {/* 3. MATERIAL & PRECIOUS METALS SPECTRUM CARD (FULL METALS BREAKDOWN) */}
-            {activeDeviceData && (
-              <div className="mb-8 bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-sm relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <h3 className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider">
-                      LAB RECOVERABLE METAL COMPOSITION
-                    </h3>
-                  </div>
-                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">
-                    Official Dataset Spec
-                  </span>
-                </div>
 
-                {/* 5 Metals Metric Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-3.5">
-                  {/* Gold */}
-                  <div className="bg-slate-800/90 border border-amber-500/30 rounded-xl p-2.5 text-center relative group hover:border-amber-400 transition-colors">
-                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 font-mono font-bold text-[10px] mb-1">
-                      Au
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Gold</span>
-                    <span className="text-xs font-extrabold text-amber-300 font-mono block">
-                      {activeDeviceData.metals.goldG >= 0.001
-                        ? `${(activeDeviceData.metals.goldG * 1000).toFixed(2)} mg`
-                        : `${activeDeviceData.metals.goldG.toFixed(4)} g`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {activeDeviceData.rawMetals.find((m) => m.metal.includes('Gold'))?.percent || '0.016%'}
-                    </span>
-                  </div>
 
-                  {/* Silver */}
-                  <div className="bg-slate-800/90 border border-slate-400/30 rounded-xl p-2.5 text-center relative group hover:border-slate-300 transition-colors">
-                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-slate-400/20 text-slate-200 font-mono font-bold text-[10px] mb-1">
-                      Ag
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Silver</span>
-                    <span className="text-xs font-extrabold text-slate-200 font-mono block">
-                      {activeDeviceData.metals.silverG >= 0.001
-                        ? `${(activeDeviceData.metals.silverG * 1000).toFixed(1)} mg`
-                        : `${activeDeviceData.metals.silverG.toFixed(3)} g`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {activeDeviceData.rawMetals.find((m) => m.metal.includes('Silver'))?.percent || '0.166%'}
-                    </span>
-                  </div>
 
-                  {/* Copper */}
-                  <div className="bg-slate-800/90 border border-orange-500/30 rounded-xl p-2.5 text-center relative group hover:border-orange-400 transition-colors">
-                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-orange-500/20 text-orange-300 font-mono font-bold text-[10px] mb-1">
-                      Cu
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Copper</span>
-                    <span className="text-xs font-extrabold text-orange-300 font-mono block">
-                      {activeDeviceData.metals.copperG >= 1
-                        ? `${activeDeviceData.metals.copperG.toFixed(2)} g`
-                        : `${(activeDeviceData.metals.copperG * 1000).toFixed(0)} mg`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {activeDeviceData.rawMetals.find((m) => m.metal.includes('Copper'))?.percent || '8.00%'}
-                    </span>
-                  </div>
 
-                  {/* Palladium */}
-                  <div className="bg-slate-800/90 border border-teal-500/30 rounded-xl p-2.5 text-center relative group hover:border-teal-400 transition-colors">
-                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-teal-500/20 text-teal-300 font-mono font-bold text-[10px] mb-1">
-                      Pd
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Palladium</span>
-                    <span className="text-xs font-extrabold text-teal-300 font-mono block">
-                      {activeDeviceData.metals.palladiumG >= 0.001
-                        ? `${(activeDeviceData.metals.palladiumG * 1000).toFixed(2)} mg`
-                        : `${activeDeviceData.metals.palladiumG.toFixed(4)} g`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {activeDeviceData.rawMetals.find((m) => m.metal.includes('Palladium'))?.percent || '0.006%'}
-                    </span>
-                  </div>
 
-                  {/* Platinum */}
-                  <div className="bg-slate-800/90 border border-indigo-400/30 rounded-xl p-2.5 text-center relative group hover:border-indigo-300 transition-colors">
-                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-400/20 text-indigo-200 font-mono font-bold text-[10px] mb-1">
-                      Pt
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Platinum</span>
-                    <span className="text-xs font-extrabold text-indigo-200 font-mono block">
-                      {activeDeviceData.metals.platinumG >= 0.001
-                        ? `${(activeDeviceData.metals.platinumG * 1000).toFixed(2)} mg`
-                        : `${activeDeviceData.metals.platinumG.toFixed(5)} g`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block mt-0.5">
-                      {activeDeviceData.rawMetals.find((m) => m.metal.includes('Platinum'))?.percent || '0.0003%'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-lg">
-                  <span>Intrinsic Metallurgical Melt Value:</span>
-                  <span className="text-emerald-300 font-bold font-mono">≈ ₹{metalsValuation.toLocaleString('en-IN')} INR</span>
-                </div>
-              </div>
-            )}
 
             {/* 4. AGE & WORKING CONDITION */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
@@ -595,7 +604,7 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
           </div>
 
           {/* RIGHT CARD: LIVE VALUATION PANEL — premium green banner */}
-          <div className="lg:col-span-5 green-banner rounded-[28px] p-7 sm:p-8 text-white flex flex-col justify-between min-h-[560px] sticky top-24">
+          <div className="lg:col-span-5 green-banner rounded-3xl p-6 sm:p-8 text-white flex flex-col justify-between">
             {/* Leaf watermark */}
             <svg
               className="green-banner-leaf"
@@ -655,56 +664,38 @@ export const ValueEstimator: React.FC<ValueEstimatorProps> = ({ onOpenScanner })
                 </p>
               </div>
 
-              {/* Comprehensive Yields & Bonus Breakdown */}
-              <div className="space-y-2.5 mb-6 bg-black/15 border border-white/10 p-4 rounded-2xl text-xs">
-                {activeDeviceData && (
-                  <>
-                    <div className="flex justify-between items-center border-b border-white/08 pb-2">
-                      <span className="text-emerald-200/80 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                        Gold (Au) Content:
+              {/* Comprehensive Yields & Bonus Breakdown — with live ₹ values */}
+              <div className="space-y-1.5 mb-6 bg-black/15 border border-white/10 p-4 rounded-2xl text-xs">
+                {activeDeviceData && metalValuation.breakdown.map((row) => (
+                  <div key={row.symbol} className="flex justify-between items-center border-b border-white/08 pb-1.5">
+                    <span className="text-emerald-200/80 flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${
+                        row.symbol === 'Au' ? 'bg-amber-400'
+                        : row.symbol === 'Ag' ? 'bg-slate-300'
+                        : row.symbol === 'Cu' ? 'bg-orange-400'
+                        : row.symbol === 'Pd' ? 'bg-teal-400'
+                        : 'bg-indigo-400'
+                      }`}></span>
+                      {row.metal} ({row.symbol}):
+                    </span>
+                    <div className="text-right">
+                      <span className={`font-mono font-bold block ${row.textClass}`}>
+                        {row.grams >= 1 ? `${row.grams.toFixed(3)} g` : `${(row.grams * 1000).toFixed(2)} mg`}
                       </span>
-                      <span className="font-mono font-bold text-amber-300">
-                        {activeDeviceData.metals.goldG >= 0.001
-                          ? `${(activeDeviceData.metals.goldG * 1000).toFixed(2)} mg`
-                          : `${activeDeviceData.metals.goldG.toFixed(4)} g`}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-white/08 pb-2">
-                      <span className="text-emerald-200/80 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-slate-300"></span>
-                        Silver (Ag) Content:
-                      </span>
-                      <span className="font-mono font-bold text-slate-100">
-                        {activeDeviceData.metals.silverG >= 0.001
-                          ? `${(activeDeviceData.metals.silverG * 1000).toFixed(1)} mg`
-                          : `${activeDeviceData.metals.silverG.toFixed(3)} g`}
+                      <span className="text-[10px] text-white/50 font-mono">
+                        ₹{row.value >= 1 ? row.value.toFixed(2) : row.value.toFixed(4)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-white/08 pb-2">
-                      <span className="text-emerald-200/80 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-orange-400"></span>
-                        Copper (Cu) Content:
-                      </span>
-                      <span className="font-mono font-bold text-orange-200">
-                        {activeDeviceData.metals.copperG >= 1
-                          ? `${activeDeviceData.metals.copperG.toFixed(2)} g`
-                          : `${(activeDeviceData.metals.copperG * 1000).toFixed(0)} mg`}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-white/08 pb-2">
-                      <span className="text-emerald-200/80 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-teal-400"></span>
-                        Palladium &amp; Platinum:
-                      </span>
-                      <span className="font-mono font-bold text-teal-200">
-                        {(activeDeviceData.metals.palladiumG * 1000).toFixed(1)}mg Pd / {(activeDeviceData.metals.platinumG * 1000).toFixed(2)}mg Pt
-                      </span>
-                    </div>
-                  </>
-                )}
+                  </div>
+                ))}
 
-                <div className="flex justify-between items-center pt-1">
+                {/* Metal subtotal */}
+                <div className="flex justify-between items-center pt-1 border-b border-white/08 pb-1.5">
+                  <span className="text-emerald-200/70 font-semibold">Raw Metal Value:</span>
+                  <span className="font-bold text-emerald-300 font-mono">₹{metalsValuation.toLocaleString('en-IN')}</span>
+                </div>
+
+                <div className="flex justify-between items-center pt-0.5">
                   <span className="text-emerald-200/70">Green Reward Bonus:</span>
                   <span className="font-bold text-amber-300">+{ecoCoins} Eco-Coins</span>
                 </div>

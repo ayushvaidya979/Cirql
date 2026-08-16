@@ -45,6 +45,30 @@
       "co2SavedKg": 0,
       "treesPlanted": 0,
       "createdAt": "2026-08-15T08:54:08.835Z"
+    },
+    {
+      "id": "usr-1786904376789",
+      "name": "Google User",
+      "email": "user_1786904376789@gmail.com",
+      "googleId": "g-1786904376789",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-16T18:19:36.789Z"
+    },
+    {
+      "id": "usr-1786906546828",
+      "name": "Google User",
+      "email": "user_1786906546828@gmail.com",
+      "googleId": "g-1786906546828",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-16T18:55:46.828Z"
     }
   ],
   "recyclers": [
