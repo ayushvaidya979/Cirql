@@ -36,3 +36,28 @@ export interface FAQItem {
   question: string;
   answer: string;
 }
+
+export type DeviceCategory = 'Smartphone' | 'Laptop / PC';
+
+export interface MetalYieldItem {
+  metal: string;
+  amountG: number;
+  percent: string;
+}
+
+export interface DeviceModelData {
+  brand: string;
+  model: string;
+  category: DeviceCategory;
+  releaseYear: number;
+  deviceWeightG: number;
+  metals: {
+    goldG: number;
+    silverG: number;
+    copperG: number;
+    palladiumG: number;
+    platinumG: number;
+  };
+  rawMetals: MetalYieldItem[];
+}
+
