@@ -1,6 +1,13 @@
 import { Recycler, RewardItem } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = (() => {
+  const configured = (import.meta.env.VITE_API_URL || '/api').trim();
+
+  if (!configured || configured === '/api') return '/api';
+  if (configured.endsWith('/api')) return configured;
+
+  return `${configured.replace(/\/+$/, '')}/api`;
+})();
 
 // Helper for JWT auth header
 const getAuthHeaders = (): HeadersInit => {
