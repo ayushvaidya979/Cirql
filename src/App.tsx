@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
@@ -16,10 +17,67 @@ import { Footer } from './components/Footer';
 import { AIScannerModal } from './components/AIScannerModal';
 import { AuthModal } from './components/AuthModal';
 import { BookingModal } from './components/BookingModal';
+
+import { HelpCenter } from './pages/HelpCenter';
 import { Recycler } from './types';
 import { api, UserProfile } from './services/api';
 
-export function App() {
+interface MainLandingProps {
+  onOpenScanner: (calcVal?: number, deviceName?: string) => void;
+  onBookDropoff: (recycler: Recycler) => void;
+}
+
+function MainLanding({ onOpenScanner, onBookDropoff }: MainLandingProps) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.replace('#', ''));
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+      }
+    }
+  }, [location]);
+
+  return (
+    <main className="flex-grow">
+      {/* 01 HERO (Scan CTA protected by Auth gate) */}
+      <Hero onOpenScanner={() => onOpenScanner()} />
+
+      {/* 02 HOW CIRQL WORKS */}
+      <HowItWorks onOpenScanner={() => onOpenScanner()} />
+
+      {/* 03 VALUE ESTIMATOR (Discover Value CTA protected by Auth gate) */}
+      <ValueEstimator onOpenScanner={onOpenScanner} />
+
+      {/* 04 RECYCLER LOCATOR (Book Drop-off CTA protected by Auth gate) */}
+      <RecyclerLocator onBookDropoff={onBookDropoff} />
+
+      {/* 05 GREEN REWARDS */}
+      <Rewards />
+
+      {/* 06 CORPORATE E-WASTE */}
+      <Corporate />
+
+      {/* 07 WHY CIRQL */}
+      <WhyCirql />
+
+      {/* 08 TESTIMONIALS */}
+      <Testimonials />
+
+      {/* 09 FAQ */}
+      <FAQ />
+
+      {/* 10 RECENT NUMBERS */}
+      <RecentNumbers />
+
+      {/* 11 CONTACT */}
+      <Contact />
+    </main>
+  );
+}
+
+function AppContent() {
   const [user, setUser] = useState<UserProfile | null>(() => api.auth.getCurrentUser());
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
@@ -37,14 +95,17 @@ export function App() {
   useEffect(() => {
     const token = localStorage.getItem('cirql_token');
     if (token) {
-      api.auth.getMe().then((res) => {
-        if (res.success && res.data?.user) {
-          setUser(res.data.user);
-          localStorage.setItem('cirql_user', JSON.stringify(res.data.user));
-        }
-      }).catch(() => {
-        // Token expired or invalid
-      });
+      api.auth
+        .getMe()
+        .then((res) => {
+          if (res.success && res.data?.user) {
+            setUser(res.data.user);
+            localStorage.setItem('cirql_user', JSON.stringify(res.data.user));
+          }
+        })
+        .catch(() => {
+          // Token expired or invalid
+        });
     }
   }, []);
 
@@ -106,44 +167,34 @@ export function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Page Content */}
-      <main className="flex-grow">
-        {/* 01 HERO (Scan CTA protected by Auth gate) */}
-        <Hero onOpenScanner={() => handleOpenScanner()} />
-
-        {/* 02 HOW CIRQL WORKS */}
-        <HowItWorks onOpenScanner={() => handleOpenScanner()} />
-
-        {/* 03 VALUE ESTIMATOR (Discover Value CTA protected by Auth gate) */}
-        <ValueEstimator onOpenScanner={handleOpenScanner} />
-
-        {/* 04 RECYCLER LOCATOR (Book Drop-off CTA protected by Auth gate) */}
-        <RecyclerLocator onBookDropoff={handleBookDropoff} />
-
-        {/* 05 GREEN REWARDS */}
-        <Rewards />
-
-        {/* 06 CORPORATE E-WASTE */}
-        <Corporate />
-
-        {/* 07 WHY CIRQL */}
-        <WhyCirql />
-
-        {/* 08 TESTIMONIALS */}
-        <Testimonials />
-
-        {/* 09 FAQ */}
-        <FAQ />
-
-        {/* 10 RECENT NUMBERS */}
-        <RecentNumbers />
-
-        {/* 11 CONTACT */}
-        <Contact />
-      </main>
+      {/* Routed Content */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <MainLanding
+              onOpenScanner={handleOpenScanner}
+              onBookDropoff={handleBookDropoff}
+            />
+          }
+        />
+        <Route path="/help" element={<HelpCenter />} />
+        <Route
+          path="*"
+          element={
+            <MainLanding
+              onOpenScanner={handleOpenScanner}
+              onBookDropoff={handleBookDropoff}
+            />
+          }
+        />
+      </Routes>
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating Help Widget mounted outside <Routes> so visible everywhere */}
+
 
       {/* Interactive Modals */}
       <AIScannerModal
@@ -172,6 +223,14 @@ export function App() {
         }}
       />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }
 

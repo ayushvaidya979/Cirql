@@ -1,0 +1,42 @@
+/**
+ * Cirql Help & Support — Design Tokens
+ * ---------------------------------------------------------------
+ * Clean CSS custom properties for Cirql Help Center & floating widget.
+ * Harmonized with Cirql's emerald green / copper theme and typography.
+ */
+
+:root {
+  /* Surfaces */
+  --cirql-bg: #F4F7F4;
+  --cirql-surface: #FFFFFF;
+  --cirql-surface-sunken: #EAF3EE;
+
+  /* Ink */
+  --cirql-ink: #0F172A;
+  --cirql-ink-muted: #475569;
+  --cirql-ink-faint: #94A3B8;
+
+  /* Brand */
+  --cirql-green: #0EA47A;
+  --cirql-green-dark: #0B7A5C;
+  --cirql-green-tint: #DCF3E9;
+  --cirql-copper: #C1743D;
+  --cirql-copper-tint: #F5E4D4;
+
+  /* Utility */
+  --cirql-border: #DCE7E0;
+  --cirql-danger: #C0432F;
+  --cirql-shadow: 0 12px 32px rgba(18, 36, 29, 0.14);
+  --cirql-shadow-sm: 0 4px 12px rgba(18, 36, 29, 0.10);
+
+  /* Type */
+  --cirql-font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --cirql-font-body: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --cirql-font-mono: "IBM Plex Mono", "Courier New", monospace;
+
+  /* Shape */
+  --cirql-radius-sm: 10px;
+  --cirql-radius-md: 16px;
+  --cirql-radius-lg: 28px;
+  --cirql-radius-pill: 999px;
+}

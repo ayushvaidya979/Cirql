@@ -1370,5 +1370,16 @@
     }
   ],
   "redemptions": [],
-  "inquiries": []
+  "inquiries": [],
+  "identification_reports": [
+    {
+      "id": "rep-1787041047245",
+      "deviceType": "Smartphone",
+      "predictedModel": "iPhone 14",
+      "correctModel": "iPhone 15 Pro",
+      "confidence": 0.88,
+      "notes": "Camera island had 3 lenses instead of 2",
+      "reportedAt": "2026-08-18T08:17:27.245Z"
+    }
+  ]
 }

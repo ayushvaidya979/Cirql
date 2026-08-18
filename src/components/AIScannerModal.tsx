@@ -48,6 +48,38 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [scanDetails, setScanDetails] = useState<any>(null);
 
+  // Wrong prediction reporting state
+  const [isReporting, setIsReporting] = useState(false);
+  const [correctModelInput, setCorrectModelInput] = useState('');
+  const [reportNotesInput, setReportNotesInput] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+
+  const handleReportIdentification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setReportSubmitting(true);
+    try {
+      const confidenceVal = scanDetails?.confidenceScore || 0.96;
+      await fetch('/api/report-identification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deviceType: selectedDeviceType,
+          predictedModel: selectedDeviceType,
+          confidence: confidenceVal,
+          correctModel: correctModelInput || null,
+          notes: reportNotesInput || null,
+        }),
+      });
+      setReportSubmitted(true);
+    } catch (err) {
+      console.error('Failed to report identification:', err);
+      setReportSubmitted(true);
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
   const deviceCategories = [
     { name: 'Apple Smartphone', icon: Smartphone, defaultVal: 3851 },
     { name: 'Pro Laptop / PC', icon: Laptop, defaultVal: 8420 },
@@ -741,6 +773,75 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                   </span>
                 </div>
               </div>
+
+              {/* Report Incorrect Identification Option */}
+              {!isReporting && !reportSubmitted ? (
+                <div className="flex justify-end -mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsReporting(true)}
+                    className="text-[11px] font-bold text-slate-500 hover:text-amber-700 underline underline-offset-2 flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Report incorrect identification</span>
+                  </button>
+                </div>
+              ) : isReporting && !reportSubmitted ? (
+                <form onSubmit={handleReportIdentification} className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/90 space-y-2.5 animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Flag Incorrect Identification</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsReporting(false)}
+                      className="text-[11px] font-bold text-slate-400 hover:text-slate-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-amber-800/90 leading-snug">
+                    Help us refine Cirql AI models. If you know the actual device model, enter it below:
+                  </p>
+                  <input
+                    type="text"
+                    value={correctModelInput}
+                    onChange={(e) => setCorrectModelInput(e.target.value)}
+                    placeholder="e.g. Samsung Galaxy S23 Ultra or Dell XPS 15"
+                    className="w-full text-xs px-3 py-2 rounded-xl bg-white border border-amber-200 text-slate-900 focus:outline-none focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    value={reportNotesInput}
+                    onChange={(e) => setReportNotesInput(e.target.value)}
+                    placeholder="Optional notes (e.g. device is inside a silicone case)"
+                    className="w-full text-xs px-3 py-2 rounded-xl bg-white border border-amber-200 text-slate-900 focus:outline-none focus:border-amber-500"
+                  />
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsReporting(false)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-amber-100/60"
+                    >
+                      Dismiss
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={reportSubmitting}
+                      className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-colors"
+                    >
+                      {reportSubmitting ? 'Submitting…' : 'Submit Correction'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Report submitted! Thank you for helping us improve AI vision accuracy.</span>
+                </div>
+              )}
+
 
               {/* Precious Metals Extraction Yield */}
               {(() => {

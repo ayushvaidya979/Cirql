@@ -1,0 +1,310 @@
+.cirql-hc {
+  background: var(--cirql-bg);
+  color: var(--cirql-ink);
+  font-family: var(--cirql-font-body);
+  min-height: 100vh;
+}
+
+.cirql-hc-hero {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 120px 24px 44px;
+  text-align: left;
+}
+
+.cirql-hc-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cirql-green-dark);
+  text-decoration: none;
+  margin-bottom: 24px;
+  padding: 6px 14px;
+  border-radius: var(--cirql-radius-pill);
+  background: var(--cirql-green-tint);
+  border: 1px solid rgba(14, 164, 122, 0.2);
+  transition: all 0.18s ease;
+}
+
+.cirql-hc-back-btn:hover {
+  background: var(--cirql-green);
+  color: white;
+  transform: translateX(-2px);
+}
+
+.cirql-hc-eyebrow {
+  font-family: var(--cirql-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cirql-green-dark);
+  margin: 0 0 12px;
+}
+
+.cirql-hc-headline {
+  font-family: var(--cirql-font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  color: #0f172a;
+}
+
+.cirql-hc-headline-accent {
+  color: var(--cirql-copper);
+}
+
+.cirql-hc-sub {
+  font-size: 16px;
+  color: var(--cirql-ink-muted);
+  max-width: 54ch;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cirql-hc-body {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+}
+
+@media (max-width: 820px) {
+  .cirql-hc-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cirql-hc-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 100px;
+  align-self: start;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--cirql-border);
+  border-radius: var(--cirql-radius-md);
+  box-shadow: var(--cirql-shadow-sm);
+}
+
+.cirql-hc-toc-title {
+  font-size: 11px;
+  font-family: var(--cirql-font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--cirql-ink-faint);
+  letter-spacing: 0.08em;
+  margin: 0 0 8px 4px;
+}
+
+.cirql-hc-toc-link {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--cirql-ink-muted);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--cirql-radius-sm);
+  transition: all 0.15s ease;
+}
+
+.cirql-hc-toc-link:hover {
+  background: var(--cirql-surface-sunken);
+  color: var(--cirql-green-dark);
+}
+
+.cirql-hc-toc-link-accent {
+  color: var(--cirql-copper);
+  font-weight: 700;
+}
+
+.cirql-hc-content {
+  min-width: 0;
+}
+
+.cirql-hc-section {
+  background: var(--cirql-surface);
+  border: 1px solid var(--cirql-border);
+  border-radius: var(--cirql-radius-md);
+  padding: 36px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.cirql-hc-section-title {
+  font-family: var(--cirql-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 20px;
+  color: var(--cirql-ink);
+}
+
+.cirql-hc-section-arc {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 24px solid var(--cirql-green-tint);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cirql-hc-faq {
+  border-top: 1px solid var(--cirql-border);
+  padding: 16px 0;
+}
+
+.cirql-hc-faq:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.cirql-hc-faq-q {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-family: var(--cirql-font-body);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--cirql-ink);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.cirql-hc-faq-q:hover {
+  color: var(--cirql-green-dark);
+}
+
+.cirql-hc-faq-chevron {
+  flex-shrink: 0;
+  color: var(--cirql-ink-faint);
+  font-size: 14px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cirql-hc-faq-chevron[data-open="true"] {
+  transform: rotate(180deg);
+  color: var(--cirql-green);
+}
+
+.cirql-hc-faq-a {
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--cirql-ink-muted);
+  max-width: 65ch;
+}
+
+.cirql-hc-contact-lede {
+  color: var(--cirql-ink-muted);
+  font-size: 14.5px;
+  margin: 0 0 24px;
+  max-width: 56ch;
+  line-height: 1.55;
+}
+
+.cirql-hc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cirql-hc-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 480px) {
+  .cirql-hc-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cirql-hc-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cirql-ink-muted);
+}
+
+.cirql-hc-label input,
+.cirql-hc-label select,
+.cirql-hc-label textarea {
+  font-family: var(--cirql-font-body);
+  font-size: 14.5px;
+  color: var(--cirql-ink);
+  border: 1px solid var(--cirql-border);
+  border-radius: var(--cirql-radius-sm);
+  padding: 12px 14px;
+  background: var(--cirql-bg);
+  resize: vertical;
+  transition: all 0.15s ease;
+}
+
+.cirql-hc-label input:focus,
+.cirql-hc-label select:focus,
+.cirql-hc-label textarea:focus {
+  outline: none;
+  border-color: var(--cirql-green);
+  box-shadow: 0 0 0 3px var(--cirql-green-tint);
+}
+
+.cirql-hc-submit {
+  align-self: flex-start;
+  padding: 12px 28px;
+  border-radius: var(--cirql-radius-pill);
+  border: none;
+  background: linear-gradient(135deg, #0ea47a 0%, #0b7a5c 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 14px rgba(14, 164, 122, 0.3);
+}
+
+.cirql-hc-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 164, 122, 0.4);
+}
+
+.cirql-hc-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cirql-hc-success {
+  background: var(--cirql-green-tint);
+  color: var(--cirql-green-dark);
+  border-radius: var(--cirql-radius-sm);
+  padding: 16px 20px;
+  font-size: 14.5px;
+  border: 1px solid rgba(14, 164, 122, 0.25);
+}
+
+.cirql-hc-error {
+  color: var(--cirql-danger);
+  font-size: 13.5px;
+  margin: 4px 0 0;
+  font-weight: 600;
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, User, Leaf, Recycle, LogOut, Coins, TreePine, ShieldCheck, ChevronDown } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X, User, Leaf, Recycle, LogOut, Coins, TreePine, ShieldCheck, ChevronDown, HelpCircle } from 'lucide-react';
 import { UserProfile } from '../services/api';
 
 interface NavbarProps {
@@ -16,7 +17,15 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onOpenAuth, onOpenScanner,
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
+    if (location.pathname === '/help') {
+      setActiveSection('help');
+      return;
+    }
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
@@ -38,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onOpenAuth, onOpenScanner,
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -58,16 +67,27 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onOpenAuth, onOpenScanner,
     { name: 'Recyclers', href: '#recyclers', id: 'recyclers' },
     { name: 'Rewards', href: '#rewards', id: 'rewards' },
     { name: 'About', href: '#about', id: 'about' },
+    { name: 'Help', href: '/help', id: 'help' },
   ];
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLElement>, href: string) => {
     if (e && e.preventDefault) e.preventDefault();
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
     setMobileMenuOpen(false);
+
+    if (href.startsWith('/')) {
+      navigate(href);
+      return;
+    }
+
+    if (location.pathname !== '/') {
+      navigate('/' + href);
+    } else {
+      const targetId = href.replace('#', '');
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   };
 
   const getInitials = (name: string) => {
