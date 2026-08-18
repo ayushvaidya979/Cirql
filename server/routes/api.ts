@@ -8,8 +8,11 @@ import * as estimatorController from '../controllers/estimatorController.js';
 import * as rewardsController from '../controllers/rewardsController.js';
 import * as inquiriesController from '../controllers/inquiriesController.js';
 import * as statsController from '../controllers/statsController.js';
+import supportRouter from './support.js';
+import reportRouter from './reportIdentification.js';
 
 const router = Router();
+
 
 // Health Check
 router.get('/health', (req, res) => {
@@ -62,4 +65,9 @@ router.post('/inquiries/contact', inquiriesController.submitContactMessage);
 // Stats & Impact Metrics
 router.get('/stats', statsController.getPlatformStats);
 
+// Help & Support Routes
+router.use(supportRouter);
+router.use(reportRouter);
+
 export default router;
+

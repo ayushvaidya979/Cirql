@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle, Leaf, Recycle } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Send, CheckCircle, Leaf, Recycle, HelpCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,9 +17,17 @@ export const Footer: React.FC = () => {
   };
 
   const handleNavClick = (href: string) => {
-    const el = document.querySelector(href);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    if (href.startsWith('/')) {
+      navigate(href);
+      return;
+    }
+    if (location.pathname !== '/') {
+      navigate('/' + href);
+    } else {
+      const el = document.querySelector(href);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -57,22 +68,28 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs font-semibold text-slate-300">
               <li>
-                <a href="#home" onClick={() => handleNavClick('#home')} className="hover:text-emerald-400 transition-colors">Home</a>
+                <a href="#home" onClick={(e) => { e.preventDefault(); handleNavClick('#home'); }} className="hover:text-emerald-400 transition-colors">Home</a>
               </li>
               <li>
-                <a href="#how-it-works" onClick={() => handleNavClick('#how-it-works')} className="hover:text-emerald-400 transition-colors">How It Works</a>
+                <a href="#how-it-works" onClick={(e) => { e.preventDefault(); handleNavClick('#how-it-works'); }} className="hover:text-emerald-400 transition-colors">How It Works</a>
               </li>
               <li>
-                <a href="#value-estimator" onClick={() => handleNavClick('#value-estimator')} className="hover:text-emerald-400 transition-colors">Value Estimator</a>
+                <a href="#value-estimator" onClick={(e) => { e.preventDefault(); handleNavClick('#value-estimator'); }} className="hover:text-emerald-400 transition-colors">Value Estimator</a>
               </li>
               <li>
-                <a href="#recyclers" onClick={() => handleNavClick('#recyclers')} className="hover:text-emerald-400 transition-colors">Recycler Directory</a>
+                <a href="#recyclers" onClick={(e) => { e.preventDefault(); handleNavClick('#recyclers'); }} className="hover:text-emerald-400 transition-colors">Recycler Directory</a>
               </li>
               <li>
-                <a href="#rewards" onClick={() => handleNavClick('#rewards')} className="hover:text-emerald-400 transition-colors">Green Rewards</a>
+                <a href="#rewards" onClick={(e) => { e.preventDefault(); handleNavClick('#rewards'); }} className="hover:text-emerald-400 transition-colors">Green Rewards</a>
+              </li>
+              <li>
+                <Link to="/help" className="text-emerald-300 hover:text-emerald-200 font-bold transition-colors flex items-center gap-1.5 mt-1">
+                  <span>Help Center &amp; Support →</span>
+                </Link>
               </li>
             </ul>
           </div>
+
 
           {/* LEGAL (2 COLS) */}
           <div className="lg:col-span-2 space-y-3">
