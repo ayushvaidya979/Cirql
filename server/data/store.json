@@ -45,6 +45,30 @@
       "co2SavedKg": 0,
       "treesPlanted": 0,
       "createdAt": "2026-08-15T08:54:08.835Z"
+    },
+    {
+      "id": "usr-1786904376789",
+      "name": "Google User",
+      "email": "user_1786904376789@gmail.com",
+      "googleId": "g-1786904376789",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-16T18:19:36.789Z"
+    },
+    {
+      "id": "usr-1786906546828",
+      "name": "Google User",
+      "email": "user_1786906546828@gmail.com",
+      "googleId": "g-1786906546828",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-16T18:55:46.828Z"
     }
   ],
   "recyclers": [
@@ -954,6 +978,310 @@
     }
   ],
   "scans": [
+    {
+      "id": "scan-1786798762826",
+      "deviceType": "Smartphone",
+      "detectedModel": "iPhone 14 Pro Max",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 24800,
+      "materialYield": {
+        "goldGrams": 0.042,
+        "silverGrams": 0.4,
+        "copperGrams": 18,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 24.5,
+      "createdAt": "2026-08-15T12:59:22.826Z"
+    },
+    {
+      "id": "scan-1786798711141",
+      "deviceType": "Smartphone",
+      "detectedModel": "Redmi  Note 15",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 4800,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 15.8,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T12:58:31.141Z"
+    },
+    {
+      "id": "scan-1786798687405",
+      "deviceType": "Smartphone",
+      "detectedModel": "Redmi  Note 15",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 4800,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 15.8,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T12:58:07.405Z"
+    },
+    {
+      "id": "scan-1786798531361",
+      "deviceType": "Laptop",
+      "detectedModel": "Dell Latitude 7400",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 12500,
+      "materialYield": {
+        "goldGrams": 0.15,
+        "silverGrams": 1.3,
+        "copperGrams": 150,
+        "plasticGrams": 320
+      },
+      "carbonOffsetKg": 50,
+      "createdAt": "2026-08-15T12:55:31.361Z"
+    },
+    {
+      "id": "scan-1786798444270",
+      "deviceType": "Smartphone",
+      "detectedModel": "Redmi 6",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 1200,
+      "materialYield": {
+        "goldGrams": 0.03,
+        "silverGrams": 0.28,
+        "copperGrams": 15,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 11.5,
+      "createdAt": "2026-08-15T12:54:04.270Z"
+    },
+    {
+      "id": "scan-1786798429287",
+      "deviceType": "Smartphone",
+      "detectedModel": "Redmi 6",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 1200,
+      "materialYield": {
+        "goldGrams": 0.03,
+        "silverGrams": 0.28,
+        "copperGrams": 15,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 11.5,
+      "createdAt": "2026-08-15T12:53:49.287Z"
+    },
+    {
+      "id": "scan-1786798408751",
+      "deviceType": "Smartphone",
+      "detectedModel": "Samsung Galaxy Note 20 Ultra",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:53:28.751Z"
+    },
+    {
+      "id": "scan-1786797993440",
+      "deviceType": "Smartphone",
+      "detectedModel": "Samsung Galaxy Note 20 Ultra",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:46:33.440Z"
+    },
+    {
+      "id": "scan-1786797956578",
+      "deviceType": "Smartphone",
+      "detectedModel": "Redmi 9 Pro",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 4800,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 15.8,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T12:45:56.578Z"
+    },
+    {
+      "id": "scan-1786797946803",
+      "deviceType": "Laptop",
+      "detectedModel": "HP Spectre x360 14",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 18200,
+      "materialYield": {
+        "goldGrams": 0.18,
+        "silverGrams": 1.5,
+        "copperGrams": 160,
+        "plasticGrams": 320
+      },
+      "carbonOffsetKg": 58,
+      "createdAt": "2026-08-15T12:45:46.803Z"
+    },
+    {
+      "id": "scan-1786797926373",
+      "deviceType": "Smartphone",
+      "detectedModel": "Samsung Galaxy S24 Ultra",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 38500,
+      "materialYield": {
+        "goldGrams": 0.048,
+        "silverGrams": 0.45,
+        "copperGrams": 19.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 28,
+      "createdAt": "2026-08-15T12:45:26.373Z"
+    },
+    {
+      "id": "scan-1786797921177",
+      "deviceType": "Laptop",
+      "detectedModel": "Dell XPS 15 (9520)",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 24500,
+      "materialYield": {
+        "goldGrams": 0.22,
+        "silverGrams": 1.8,
+        "copperGrams": 210,
+        "plasticGrams": 320
+      },
+      "carbonOffsetKg": 68,
+      "createdAt": "2026-08-15T12:45:21.177Z"
+    },
+    {
+      "id": "scan-1786797760290",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:42:40.290Z"
+    },
+    {
+      "id": "scan-1786797741057",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:42:21.057Z"
+    },
+    {
+      "id": "scan-1786797714043",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:41:54.043Z"
+    },
+    {
+      "id": "scan-1786797593882",
+      "deviceType": "Apple Smartphone",
+      "detectedModel": "Apple Smartphone",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-15T12:39:53.882Z"
+    },
+    {
+      "id": "scan-1786797545145",
+      "deviceType": "iPhone 15 Pro Max",
+      "detectedModel": "iPhone 15 Pro",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 38500,
+      "materialYield": {
+        "goldGrams": 0.048,
+        "silverGrams": 0.45,
+        "copperGrams": 19.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 28,
+      "createdAt": "2026-08-15T12:39:05.145Z"
+    },
+    {
+      "id": "scan-1786797491707",
+      "deviceType": "dell_XPS15(9520)",
+      "detectedModel": "Dell XPS 15 (9520)",
+      "conditionGrade": "A",
+      "confidenceScore": 0.95,
+      "estimatedValue": 24500,
+      "materialYield": {
+        "goldGrams": 0.22,
+        "silverGrams": 1.8,
+        "copperGrams": 210,
+        "plasticGrams": 320
+      },
+      "carbonOffsetKg": 68,
+      "createdAt": "2026-08-15T12:38:11.707Z"
+    },
+    {
+      "id": "scan-1786797452377",
+      "deviceType": "iPhone 14 Pro Max",
+      "detectedModel": "iPhone 14 Pro Max",
+      "conditionGrade": "A",
+      "confidenceScore": 0.94,
+      "estimatedValue": 3850,
+      "materialYield": {
+        "goldGrams": 0.034,
+        "silverGrams": 0.35,
+        "copperGrams": 16.2,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 18.5,
+      "createdAt": "2026-08-15T12:37:32.378Z"
+    },
     {
       "id": "scan-1786786087700",
       "deviceType": "Apple Smartphone",

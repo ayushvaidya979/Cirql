@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X, User, Lock, Mail, ArrowRight, Leaf,
   CheckCircle2, Phone, MapPin, Eye, EyeOff, ArrowLeft, Shield
@@ -177,17 +177,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
   const [successMsg, setSuccessMsg] = useState('');
   const [success, setSuccess] = useState(false);
   const [animIn, setAnimIn] = useState(false);
-
-  // Google OAuth Flow State
-  const [showGoogleAuth, setShowGoogleAuth] = useState(false);
-  const [googleEmail, setGoogleEmail] = useState('');
-  const [googlePassword, setGooglePassword] = useState('');
-  const [googleStep, setGoogleStep] = useState<'email' | 'password'>('email');
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleButtonInitializedRef = useRef(false);
 
   useEffect(() => {
     setMode(initialMode);
-    setShowGoogleAuth(false);
-    setGoogleStep('email');
+    setFormError('');
+    setSuccess(false);
+    setSuccessMsg('');
+    googleButtonInitializedRef.current = false;
   }, [initialMode, isOpen]);
 
   useEffect(() => {
@@ -204,12 +202,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const switchMode = (m: 'signin' | 'login') => {
     setMode(m);
     setFormError('');
-    setShowGoogleAuth(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -281,66 +276,93 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
     }
   };
 
-  // Google OAuth Trigger
-  const handleOpenGoogle = () => {
-    setShowGoogleAuth(true);
-    setGoogleStep('email');
-    setFormError('');
-  };
-
-  const handleGoogleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleSuccess = async (response: { credential?: string }) => {
     setFormError('');
 
-    if (googleStep === 'email') {
-      if (!googleEmail || !googleEmail.includes('@')) {
-        setFormError('Enter a valid Google email address');
-        return;
-      }
-      setGoogleStep('password');
-      return;
-    }
-
-    if (!googlePassword) {
-      setFormError('Enter your Google account password');
+    if (!response.credential) {
+      setFormError('Google sign-in failed. Please try again.');
       return;
     }
 
     setLoading(true);
+
     try {
-      const emailPrefix = googleEmail.split('@')[0];
-      const formattedName = emailPrefix
-        .replace(/[._]/g, ' ')
-        .replace(/\b\w/g, c => c.toUpperCase());
+      const res = await api.auth.googleAuth({ googleToken: response.credential });
 
-      const res = await api.auth.googleAuth({
-        email: googleEmail,
-        name: formattedName || 'Google User',
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${formattedName || 'G'}&backgroundColor=00897b,43a047`,
-      });
-
-      if (res.success) {
-        setSuccessMsg(`Signed in as ${googleEmail}! Welcome to Cirql.`);
-        setSuccess(true);
-        if (res.data?.user && onAuthSuccess) {
-          onAuthSuccess(res.data.user);
-        }
-        setTimeout(() => {
-          onClose();
-          setSuccess(false);
-          setShowGoogleAuth(false);
-        }, 1200);
-      } else {
+      if (!res.success) {
         setFormError(res.message || 'Google authentication failed.');
+        return;
       }
+
+      setSuccessMsg('Signed in with Google successfully.');
+      setSuccess(true);
+
+      if (res.data?.user && onAuthSuccess) {
+        onAuthSuccess(res.data.user);
+      }
+
+      setTimeout(() => {
+        onClose();
+        setSuccess(false);
+        setFormError('');
+      }, 1200);
     } catch (err: any) {
-      setFormError('Google sign-in error. Try again.');
+      setFormError(err.message || 'Google sign-in error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (!isOpen || !googleButtonRef.current) return;
+
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setFormError('Google Sign-In is not configured for this environment.');
+      return;
+    }
+
+    const googleWindow = (window as Window & {
+      google?: {
+        accounts: {
+          id: {
+            initialize: (options: { client_id: string; callback: (response: { credential?: string }) => void }) => void;
+            renderButton: (element: Element, options: Record<string, unknown>) => void;
+            prompt: () => void;
+          };
+        };
+      };
+    }).google;
+
+    if (!googleWindow || !googleWindow.accounts || !googleWindow.accounts.id) {
+      return;
+    }
+
+    if (googleButtonInitializedRef.current) {
+      return;
+    }
+
+    googleWindow.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleGoogleSuccess,
+    });
+
+    googleWindow.accounts.id.renderButton(googleButtonRef.current, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+      shape: 'pill',
+      logo_alignment: 'left',
+      width: 280,
+    });
+
+    googleButtonInitializedRef.current = true;
+  }, [isOpen, mode, handleGoogleSuccess]);
+
   const isSignIn = mode === 'signin';
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -348,145 +370,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
       style={{ background: 'rgba(4,12,20,0.72)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      {/* ── GOOGLE AUTHENTICATION VIEW ── */}
-      {showGoogleAuth ? (
-        <div
-          className="relative w-full max-w-[440px] bg-white rounded-3xl p-8 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200"
-          style={{ transform: animIn ? 'translateY(0) scale(1)' : 'translateY(15px) scale(0.97)' }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-            <button
-              type="button"
-              onClick={() => {
-                setShowGoogleAuth(false);
-                setGoogleStep('email');
-                setFormError('');
-              }}
-              className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Cirql</span>
-            </button>
-            <button
-              onClick={onClose}
-              className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-200/80 flex items-center justify-center mb-3 shadow-xs">
-              <GoogleColorLogo />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900">
-              {googleStep === 'email' ? 'Sign in with Google' : 'Welcome'}
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              {googleStep === 'email'
-                ? 'to continue to Cirql E-Waste Platform'
-                : googleEmail}
-            </p>
-          </div>
-
-          {success ? (
-            <div className="py-8 text-center bg-emerald-50 rounded-2xl p-6 border border-emerald-200">
-              <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto mb-2" />
-              <h4 className="font-bold text-slate-900 text-sm">Authenticated with Google</h4>
-              <p className="text-xs text-slate-500 mt-1">{successMsg}</p>
-            </div>
-          ) : (
-            <form onSubmit={handleGoogleSubmit} className="space-y-4">
-              {googleStep === 'email' ? (
-                <div>
-                  <label className="block text-[11px] font-bold uppercase text-slate-500 tracking-wider mb-1.5 text-left">
-                    Email or phone
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    autoFocus
-                    placeholder="example@gmail.com"
-                    value={googleEmail}
-                    onChange={e => setGoogleEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm font-medium transition-all"
-                  />
-                  <div className="text-left mt-2">
-                    <span className="text-xs text-blue-600 font-semibold hover:underline cursor-pointer">
-                      Forgot email?
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <label className="block text-[11px] font-bold uppercase text-slate-500 tracking-wider mb-1.5 text-left">
-                    Enter your password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    autoFocus
-                    placeholder="Enter password"
-                    value={googlePassword}
-                    onChange={e => setGooglePassword(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-slate-900 text-sm font-medium transition-all"
-                  />
-                  <div className="text-left mt-2 flex justify-between items-center">
-                    <button
-                      type="button"
-                      onClick={() => setGoogleStep('email')}
-                      className="text-xs text-slate-500 hover:text-slate-800"
-                    >
-                      Change account
-                    </button>
-                    <span className="text-xs text-blue-600 font-semibold hover:underline cursor-pointer">
-                      Forgot password?
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-left">
-                  {formError}
-                </div>
-              )}
-
-              <div className="pt-2 flex justify-between items-center">
-                <span className="text-[11px] text-slate-400 font-medium">
-                  Protected by Google Identity
-                </span>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-2.5 rounded-full transition-colors flex items-center gap-2 shadow-sm"
-                >
-                  {loading ? 'Verifying…' : googleStep === 'email' ? 'Next' : 'Sign in'}
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      ) : (
-        /* ── CIRQL STANDARD AUTH PANEL ── */
-        <div
-          className="relative w-full flex flex-col overflow-hidden"
-          style={{
-            maxWidth: isSignIn ? 520 : 440,
-            maxHeight: '92vh',
-            borderRadius: 26,
-            background: 'rgba(14,28,22,0.82)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            boxShadow: '0 40px 100px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.10)',
-            transform: animIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.96)',
-            opacity: animIn ? 1 : 0,
-            transition: 'transform 0.34s cubic-bezier(0.34,1.46,0.64,1), opacity 0.22s ease',
-          }}
-        >
+      <div
+        className="relative w-full flex flex-col overflow-hidden"
+        style={{
+          maxWidth: isSignIn ? 520 : 440,
+          maxHeight: '92vh',
+          borderRadius: 26,
+          background: 'rgba(14,28,22,0.82)',
+          backdropFilter: 'blur(32px)',
+          WebkitBackdropFilter: 'blur(32px)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.10)',
+          transform: animIn ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.96)',
+          opacity: animIn ? 1 : 0,
+          transition: 'transform 0.34s cubic-bezier(0.34,1.46,0.64,1), opacity 0.22s ease',
+        }}
+      >
           {/* soft inner glow top */}
           <div
             aria-hidden
@@ -671,8 +570,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
                 </div>
 
                 {/* Social */}
-                <div className="flex gap-3">
-                  <SocialBtn icon={<GoogleIcon />} label="Google" onClick={handleOpenGoogle} />
+                <div className="flex gap-3 items-center">
+                  <div className="flex-1">
+                    <div ref={googleButtonRef} />
+                  </div>
                   <SocialBtn icon={<AppleIcon />} label="Apple" dark />
                 </div>
 
@@ -708,7 +609,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, mode: initialMode,
             )}
           </div>
         </div>
-      )}
     </div>
   );
 };

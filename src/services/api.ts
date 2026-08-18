@@ -1,6 +1,13 @@
 import { Recycler, RewardItem } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = (() => {
+  const configured = (import.meta.env.VITE_API_URL || '/api').trim();
+
+  if (!configured || configured === '/api') return '/api';
+  if (configured.endsWith('/api')) return configured;
+
+  return `${configured.replace(/\/+$/, '')}/api`;
+})();
 
 // Helper for JWT auth header
 const getAuthHeaders = (): HeadersInit => {
@@ -103,7 +110,7 @@ export const api = {
       return json;
     },
 
-    async googleAuth(data: { email?: string; name?: string; avatar?: string; googleId?: string }): Promise<ApiResponse<{ user: UserProfile; token: string }>> {
+    async googleAuth(data: { googleToken: string }): Promise<ApiResponse<{ user: UserProfile; token: string }>> {
       const res = await fetch(`${API_BASE}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

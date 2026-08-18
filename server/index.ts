@@ -11,12 +11,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5001;
-
+const PORT = Number(process.env.PORT) || 5001;
 // Middleware
+import cors from 'cors';
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000'],
-  credentials: true,
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004',
+    'http://localhost:3005',
+    'http://localhost:3006',
+    'https://cirqlweb.netlify.app'
+  ],
+  credentials: true
 }));
 
 // Increase JSON payload limit to accept high-res camera device photos for Gemini Vision AI
@@ -49,7 +59,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🌱 Cirql Backend Server running on http://localhost:${PORT}`);
   console.log(`📡 API endpoints ready at http://localhost:${PORT}/api/health`);
   console.log(`🤖 Google Gemini Vision AI: ${process.env.GEMINI_API_KEY ? 'Active (Live Key)' : 'Active (Local AI Fallback Mode)'}`);

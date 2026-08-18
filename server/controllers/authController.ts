@@ -2,8 +2,11 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { db, UserRecord } from '../config/db.js';
+import { OAuth2Client } from 'google-auth-library';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'cirql_jwt_secret_dev_2026';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -96,10 +99,43 @@ export const login = async (req: Request, res: Response) => {
 
 export const googleAuth = async (req: Request, res: Response) => {
   try {
-    const { googleToken, email, name, avatar, googleId } = req.body;
+    const { googleToken } = req.body;
 
-    const userEmail = email ? email.toLowerCase() : `user_${Date.now()}@gmail.com`;
-    const userName = name || 'Google User';
+    if (!googleToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google ID token is required',
+      });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: googleToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid Google ID token',
+      });
+    }
+
+    const verifiedEmail = payload.email;
+    const verifiedName = payload.name || 'Google User';
+
+    if (!verifiedEmail) {
+      return res.status(401).json({
+        success: false,
+        message: 'Google account email could not be verified',
+      });
+    }
+
+    const googleId = payload.sub;
+    const avatar = payload.picture || '';
+    const userEmail = verifiedEmail.toLowerCase();
+    const userName = verifiedName;
 
     const users = db.get('users');
     let user = users.find((u) => u.email.toLowerCase() === userEmail);
@@ -109,9 +145,9 @@ export const googleAuth = async (req: Request, res: Response) => {
         id: `usr-${Date.now()}`,
         name: userName,
         email: userEmail,
-        googleId: googleId || `g-${Date.now()}`,
-        avatar: avatar || '',
-        cirqlCoins: 150, // Google signup bonus
+        googleId: googleId || undefined,
+        avatar: avatar || undefined,
+        cirqlCoins: 150,
         totalEwasteKg: 0,
         co2SavedKg: 0,
         treesPlanted: 0,
