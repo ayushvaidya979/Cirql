@@ -555,32 +555,6 @@ export const AIScannerModal: React.FC<AIScannerModalProps> = ({
                 </div>
               )}
 
-              {/* QUICK DEVICE PRESETS */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
-                  Or select device category
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {deviceCategories.map((cat) => {
-                    const isSelected = selectedDeviceType === cat.name;
-                    const IconComp = cat.icon;
-                    return (
-                      <button
-                        key={cat.name}
-                        type="button"
-                        onClick={() => handleSelectDevice(cat.name, cat.defaultVal)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isSelected
-                            ? 'bg-emerald-100 text-[#2d6457] border border-emerald-300 shadow-xs'
-                            : 'bg-white/80 text-slate-600 border border-slate-200/80 hover:bg-white hover:text-slate-900'
-                          }`}
-                      >
-                        <IconComp className="w-3.5 h-3.5 text-[#2d6457]" />
-                        <span>{cat.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
 
               {/* START SCAN BUTTON */}
               <button

@@ -63,7 +63,7 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">EMAIL ADDRESS</span>
-                  <h4 className="text-base font-bold text-slate-900">support@cirql.eco</h4>
+                  <h4 className="text-base font-bold text-slate-900">ayushvaidya979@gmail.com</h4>
                 </div>
               </div>
 
@@ -72,8 +72,8 @@ export const Contact: React.FC = () => {
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">TOLL FREE SUPPORT</span>
-                  <h4 className="text-base font-bold text-slate-900">+91 1800-419-CIRQL</h4>
+                  <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">CONTACT NUMBER</span>
+                  <h4 className="text-base font-bold text-slate-900">+91 9112445134</h4>
                 </div>
               </div>
 
@@ -83,7 +83,7 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">HEADQUARTERS</span>
-                  <h4 className="text-base font-bold text-slate-900">Cirql Eco Hub, BKC, Mumbai 400051</h4>
+                  <h4 className="text-base font-bold text-slate-900">Pune</h4>
                 </div>
               </div>
             </div>

@@ -69,6 +69,30 @@
       "co2SavedKg": 0,
       "treesPlanted": 0,
       "createdAt": "2026-08-16T18:55:46.828Z"
+    },
+    {
+      "id": "usr-1786953732028",
+      "name": "Google User",
+      "email": "user_1786953732028@gmail.com",
+      "googleId": "g-1786953732028",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-17T08:02:12.028Z"
+    },
+    {
+      "id": "usr-1786961639969",
+      "name": "Google User",
+      "email": "user_1786961639969@gmail.com",
+      "googleId": "g-1786961639969",
+      "avatar": "",
+      "cirqlCoins": 150,
+      "totalEwasteKg": 0,
+      "co2SavedKg": 0,
+      "treesPlanted": 0,
+      "createdAt": "2026-08-17T10:13:59.969Z"
     }
   ],
   "recyclers": [
@@ -978,6 +1002,38 @@
     }
   ],
   "scans": [
+    {
+      "id": "scan-1786961793778",
+      "deviceType": "Smartphone",
+      "detectedModel": "iPhone 12",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-17T10:16:33.778Z"
+    },
+    {
+      "id": "scan-1786961722501",
+      "deviceType": "Smartphone",
+      "detectedModel": "iPhone 12",
+      "conditionGrade": "A",
+      "confidenceScore": 0.96,
+      "estimatedValue": 14500,
+      "materialYield": {
+        "goldGrams": 0.038,
+        "silverGrams": 0.36,
+        "copperGrams": 16.5,
+        "plasticGrams": 45
+      },
+      "carbonOffsetKg": 21,
+      "createdAt": "2026-08-17T10:15:22.501Z"
+    },
     {
       "id": "scan-1786798762826",
       "deviceType": "Smartphone",

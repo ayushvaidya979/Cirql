@@ -6,7 +6,6 @@ import { HowItWorks } from './components/HowItWorks';
 import { ValueEstimator } from './components/ValueEstimator';
 import { RecyclerLocator } from './components/RecyclerLocator';
 import { Rewards } from './components/Rewards';
-import { Corporate } from './components/Corporate';
 import { WhyCirql } from './components/WhyCirql';
 import { Testimonials } from './components/Testimonials';
 import { FAQ } from './components/FAQ';
@@ -14,6 +13,8 @@ import { Contact } from './components/Contact';
 import { RecentNumbers } from './components/RecentNumbers';
 import { Footer } from './components/Footer';
 
+import { Corporate } from './components/Corporate';
+import { Founder } from './components/Founder';
 import { AIScannerModal } from './components/AIScannerModal';
 import { AuthModal } from './components/AuthModal';
 import { BookingModal } from './components/BookingModal';
@@ -73,6 +74,9 @@ function MainLanding({ onOpenScanner, onBookDropoff }: MainLandingProps) {
 
       {/* 11 CONTACT */}
       <Contact />
+
+      {/* 12 FOUNDER */}
+      <Founder />
     </main>
   );
 }
@@ -167,34 +171,47 @@ function AppContent() {
         onLogout={handleLogout}
       />
 
-      {/* Routed Content */}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainLanding
-              onOpenScanner={handleOpenScanner}
-              onBookDropoff={handleBookDropoff}
-            />
-          }
-        />
-        <Route path="/help" element={<HelpCenter />} />
-        <Route
-          path="*"
-          element={
-            <MainLanding
-              onOpenScanner={handleOpenScanner}
-              onBookDropoff={handleBookDropoff}
-            />
-          }
-        />
-      </Routes>
+      {/* Main Page Content */}
+      <main className="flex-grow">
+        {/* 01 HERO (Scan CTA protected by Auth gate) */}
+        <Hero onOpenScanner={() => handleOpenScanner()} />
+
+        {/* 02 HOW CIRQL WORKS */}
+        <HowItWorks onOpenScanner={() => handleOpenScanner()} />
+
+        {/* 03 VALUE ESTIMATOR (Discover Value CTA protected by Auth gate) */}
+        <ValueEstimator onOpenScanner={handleOpenScanner} />
+
+        {/* 04 RECYCLER LOCATOR (Book Drop-off CTA protected by Auth gate) */}
+        <RecyclerLocator onBookDropoff={handleBookDropoff} />
+
+        {/* 05 GREEN REWARDS */}
+        <Rewards />
+
+        {/* 06 CORPORATE E-WASTE */}
+        <Corporate />
+
+        {/* 07 WHY CIRQL */}
+        <WhyCirql />
+
+        {/* 08 TESTIMONIALS */}
+        <Testimonials />
+
+        {/* 09 FAQ */}
+        <FAQ />
+
+        {/* 10 RECENT NUMBERS */}
+        <RecentNumbers />
+
+        {/* 11 CONTACT */}
+        <Contact />
+
+        {/* 12 FOUNDER */}
+        <Founder />
+      </main>
 
       {/* Footer */}
       <Footer />
-
-      {/* Floating Help Widget mounted outside <Routes> so visible everywhere */}
-
 
       {/* Interactive Modals */}
       <AIScannerModal
@@ -229,7 +246,10 @@ function AppContent() {
 export function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/help" element={<HelpCenter />} />
+        <Route path="*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 }
